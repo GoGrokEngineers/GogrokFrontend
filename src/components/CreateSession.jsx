@@ -1,4 +1,3 @@
-// src/components/CreateSession.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography, Slider, TextField, RadioGroup, FormControlLabel, Radio } from "@mui/material";
@@ -6,8 +5,24 @@ import { Box, Button, Typography, Slider, TextField, RadioGroup, FormControlLabe
 const CreateSession = () => {
   const navigate = useNavigate();
   const [members, setMembers] = React.useState(1);
-  const [duration, setDuration] = React.useState(45);
+  const [duration, setDuration] = React.useState(15); // Default duration
   const [difficulty, setDifficulty] = React.useState("easy");
+
+  // Define ranges for each difficulty level
+  const difficultyRanges = {
+    easy: { min: 0, max: 30 },
+    medium: { min: 30, max: 60 },
+    hard: { min: 60, max: 90 },
+  };
+
+  // Get the current range based on difficulty
+  const { min, max } = difficultyRanges[difficulty];
+
+  // Ensure the duration stays within the selected range
+  React.useEffect(() => {
+    if (duration < min) setDuration(min);
+    if (duration > max) setDuration(max);
+  }, [difficulty, min, max]);
 
   const handleCreate = () => {
     // Logic for creating the session goes here (API call, etc.)
@@ -47,12 +62,13 @@ const CreateSession = () => {
       <Typography sx={{ marginTop: "1rem" }}>Duration (mins)</Typography>
       <Slider
         value={duration}
-        min={15}
-        max={120}
+        min={min}
+        max={max}
         step={5}
         onChange={(e, value) => setDuration(value)}
         sx={{ color: "#ff7f50", width: "60%" }}
       />
+      <Typography>{`Selected Duration: ${duration} mins`}</Typography>
 
       {/* Difficulty */}
       <Typography sx={{ marginTop: "1rem" }}>Difficulty</Typography>

@@ -5,7 +5,6 @@ import LandingPage from "./components/LandingPage";
 import CreateSession from "./components/CreateSession";
 import WaitingRoom from "./components/WaitingRoom";
 import './App.css'
-
 function App() {
   return (
     <Router>
