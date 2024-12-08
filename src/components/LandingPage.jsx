@@ -18,7 +18,8 @@ const LandingPage = () => {
 
   // Handle code input changes
   const handleCodeChange = (index, value) => {
-    if (value.match(/^\d?$/)) { // Only allow digits
+    if (value.match(/^\d?$/)) {
+      // Only allow digits
       const updatedCode = [...code];
       updatedCode[index] = value;
       setCode(updatedCode);
@@ -118,7 +119,12 @@ const LandingPage = () => {
         sx={{
           marginBottom: "1rem",
           backgroundColor: "#ff7f50",
+          color: "#fff",
           "&:hover": { backgroundColor: "#e76642" },
+          "&.Mui-disabled": {
+            backgroundColor: "#ff7f50",
+            opacity: 0.5, // Dim appearance for disabled
+          },
         }}
         disabled={!isFormValid} // Disable button if form is invalid
         onClick={() => navigate("/waiting")} // Navigate to /waiting on click
@@ -133,7 +139,13 @@ const LandingPage = () => {
           borderColor: "#ff7f50",
           color: "#ff7f50",
           "&:hover": { borderColor: "#fff", color: "#fff" },
+          "&.Mui-disabled": {
+            borderColor: "#ff7f50",
+            color: "#ff7f50",
+            opacity: 0.5, // Dim appearance for disabled
+          },
         }}
+        disabled={!isFormValid} // Disable button if form is invalid
         onClick={() => navigate("/create")}
       >
         Create
