@@ -24,10 +24,17 @@ const LandingPage = () => {
       updatedCode[index] = value;
       setCode(updatedCode);
 
-      // Move to the next input field if a value is entered
-      if (value !== "" && index < 5) {
+      // Move to the next input field if a value is entered and not at the last field
+      if (value !== "" && index < code.length - 1) {
         inputRefs.current[index + 1].focus();
       }
+    }
+  };
+
+  // Move to the previous field if Backspace is pressed and field is empty
+  const handleKeyDown = (index, event) => {
+    if (event.key === "Backspace" && code[index] === "" && index > 0) {
+      inputRefs.current[index - 1].focus();
     }
   };
 
@@ -95,6 +102,7 @@ const LandingPage = () => {
             <TextField
               value={digit}
               onChange={(e) => handleCodeChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
               inputProps={{
                 maxLength: 1,
                 style: {
