@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 const WaitingRoom = () => {
   const [membersJoined, setMembersJoined] = useState(6);
   const [maxMembers, setMaxMembers] = useState(10);
   const [sessionCode, setSessionCode] = useState("123456");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate(); // Use useNavigate hook
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -21,7 +25,8 @@ const WaitingRoom = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert("Session started!");
+      // Navigate to /solving when the session starts
+      navigate("/solving");
     }, 2000);
   };
 
