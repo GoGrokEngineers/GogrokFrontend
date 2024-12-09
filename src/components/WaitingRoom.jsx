@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
 
 const WaitingRoom = () => {
   const [membersJoined, setMembersJoined] = useState(6);
@@ -9,7 +10,7 @@ const WaitingRoom = () => {
   const [sessionCode, setSessionCode] = useState("123456");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); // Use useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -21,13 +22,28 @@ const WaitingRoom = () => {
     return () => clearInterval(interval);
   }, [membersJoined, maxMembers]);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      // Navigate to /solving when the session starts
+    try {
+      // Send POST request to the API
+      const response = await axios.post(
+        "http://139.162.134.90:8000/api/competition/create",
+        {
+          session_code: sessionCode, // Example data
+          max_members: maxMembers,
+          members_joined: membersJoined,
+        }
+      );
+      console.log("API Response:", response.data);
+
+      // Navigate to the solving page
       navigate("/solving");
-    }, 2000);
+    } catch (error) {
+      console.error("Error starting the session:", error);
+      alert("Failed to start the session. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

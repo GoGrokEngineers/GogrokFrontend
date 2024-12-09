@@ -8,17 +8,14 @@ const CreateSession = () => {
   const [duration, setDuration] = React.useState(15); // Default duration
   const [difficulty, setDifficulty] = React.useState("easy");
 
-  // Define ranges for each difficulty level
   const difficultyRanges = {
     easy: { min: 0, max: 30 },
     medium: { min: 30, max: 60 },
     hard: { min: 60, max: 90 },
   };
 
-  // Get the current range based on difficulty
   const { min, max } = difficultyRanges[difficulty];
 
-  // Ensure the duration stays within the selected range
   React.useEffect(() => {
     if (duration < min) setDuration(min);
     if (duration > max) setDuration(max);

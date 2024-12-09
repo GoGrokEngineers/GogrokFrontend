@@ -59,7 +59,7 @@ const CodingPlatform = () => {
               backgroundColor: "#3a3f47",
               "&:hover": { backgroundColor: "#4e535b" },
             }}
-            startIcon={<PlayArrowIcon />} // Adding Run icon
+            startIcon={<PlayArrowIcon />}
           >
             Run
           </Button>
@@ -69,7 +69,7 @@ const CodingPlatform = () => {
               backgroundColor: "#ff7f50",
               "&:hover": { backgroundColor: "#e76642" },
             }}
-            startIcon={<SendIcon />} // Adding Submit icon
+            startIcon={<SendIcon />}
           >
             Submit
           </Button>
