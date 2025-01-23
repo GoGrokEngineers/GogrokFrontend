@@ -67,6 +67,48 @@ function OTP({ separator, length, value, onChange }) {
 
   const handleChange = (event, currentIndex) => {
     const currentValue = event.target.value;
+
+    if (!/^\d*$/.test(currentValue)) {
+      return; 
+    }
+
+    let indexToEnter = 0;
+    while (indexToEnter <= currentIndex) {
+      if (
+        inputRefs.current[indexToEnter].value &&
+        indexToEnter < currentIndex
+      ) {
+        indexToEnter += 1;
+      } else {
+        break;
+      }
+    }
+
+    onChange((prev) => {
+      const otpArray = prev.split("");
+      const lastValue = currentValue[currentValue.length - 1];
+      otpArray[indexToEnter] = lastValue;
+      return otpArray.join("");
+    });
+
+    if (currentValue !== "" && currentIndex < length - 1) {
+      focusInput(currentIndex + 1);
+    }
+  };
+
+  const handleClick = (event, currentIndex) => {
+    selectInput(currentIndex);
+  };
+
+  const handlePaste = (event, currentIndex) => {
+    event.preventDefault();
+    const clipboardData = event.clipboardData.getData("text/plain");
+
+    if (!/^\d*$/.test(clipboardData)) {
+      return;
+    }
+
+    let pastedText = clipboardData.substring(0, length).trim();
     let indexToEnter = 0;
 
     while (indexToEnter <= currentIndex) {
@@ -79,53 +121,15 @@ function OTP({ separator, length, value, onChange }) {
         break;
       }
     }
-    onChange((prev) => {
-      const otpArray = prev.split("");
-      const lastValue = currentValue[currentValue.length - 1];
-      otpArray[indexToEnter] = lastValue;
-      return otpArray.join("");
-    });
-    if (currentValue !== "") {
-      if (currentIndex < length - 1) {
-        focusInput(currentIndex + 1);
-      }
+
+    const otpArray = value.split("");
+
+    for (let i = indexToEnter; i < length; i += 1) {
+      const lastValue = pastedText[i - indexToEnter] ?? " ";
+      otpArray[i] = lastValue;
     }
-  };
 
-  const handleClick = (event, currentIndex) => {
-    selectInput(currentIndex);
-  };
-
-  const handlePaste = (event, currentIndex) => {
-    event.preventDefault();
-    const clipboardData = event.clipboardData;
-
-    // Check if there is text data in the clipboard
-    if (clipboardData.types.includes("text/plain")) {
-      let pastedText = clipboardData.getData("text/plain");
-      pastedText = pastedText.substring(0, length).trim();
-      let indexToEnter = 0;
-
-      while (indexToEnter <= currentIndex) {
-        if (
-          inputRefs.current[indexToEnter].value &&
-          indexToEnter < currentIndex
-        ) {
-          indexToEnter += 1;
-        } else {
-          break;
-        }
-      }
-
-      const otpArray = value.split("");
-
-      for (let i = indexToEnter; i < length; i += 1) {
-        const lastValue = pastedText[i - indexToEnter] ?? " ";
-        otpArray[i] = lastValue;
-      }
-
-      onChange(otpArray.join(""));
-    }
+    onChange(otpArray.join(""));
   };
 
   return (
@@ -147,10 +151,11 @@ function OTP({ separator, length, value, onChange }) {
                 onClick: (event) => handleClick(event, index),
                 onPaste: (event) => handlePaste(event, index),
                 value: value[index] ?? "",
+                inputMode: "numeric",
+                pattern: "[0-9]*",
               },
             }}
           />
-          {/* {index === length - 1 ? null : separator} */}
         </React.Fragment>
       ))}
     </Box>
@@ -165,7 +170,6 @@ OTP.propTypes = {
 };
 
 export default OTP;
-
 
 const blue = {
   100: "#DAECFF",
@@ -191,13 +195,13 @@ const grey = {
 
 const InputElement = styled("input")(
   ({ theme }) => `
-  width: 40px;
+  width: 45px;
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 900;
   line-height: 1.5;
   padding: 8px 0;
-  border-radius: 8px;
+  border-radius: 10px;
   text-align: center;
   color: ${theme.palette.mode === "dark" ? grey[300] : grey[900]};
   background: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
