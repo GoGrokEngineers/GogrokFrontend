@@ -1,99 +1,260 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography, Slider, TextField, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { useState } from 'react'
+import {
+	Box,
+	Typography,
+	Select,
+	MenuItem,
+	Button,
+	styled,
+	Modal,
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
-const CreateSession = () => {
-  const navigate = useNavigate();
-  const [members, setMembers] = React.useState(1);
-  const [duration, setDuration] = React.useState(15); // Default duration
-  const [difficulty, setDifficulty] = React.useState("easy");
+// Custom styled components
+const Container = styled(Box)({
+	minHeight: '100vh',
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'center',
+	justifyContent: 'space-evenly',
+	backgroundColor: '#161E31',
+})
 
-  const difficultyRanges = {
-    easy: { min: 0, max: 30 },
-    medium: { min: 30, max: 60 },
-    hard: { min: 60, max: 90 },
-  };
+const Logo = styled(Typography)({
+	fontSize: '7rem',
+	fontWeight: 'bold',
+	color: '#fff',
+	textAlign: 'center',
+	lineHeight: 1,
+	'& span': {
+		color: '#F8B179',
+		display: 'block',
+		marginLeft: '2rem',
+	},
+})
 
-  const { min, max } = difficultyRanges[difficulty];
+const Card = styled(Box)({
+	backgroundColor: '#424669',
+	borderRadius: '16px',
+	padding: '25px',
+	width: '350px',
+	height: '450px',
+})
 
-  React.useEffect(() => {
-    if (duration < min) setDuration(min);
-    if (duration > max) setDuration(max);
-  }, [difficulty, min, max]);
+const FormLabel = styled(Typography)({
+	color: '#f8b179',
+	marginBottom: '8px',
+	fontSize: '1.3rem',
+	fontWeight: 'inherit',
+})
 
-  const handleCreate = () => {
-    // Logic for creating the session goes here (API call, etc.)
-    navigate("/waiting");
-  };
+const FormLabelBold = styled(Typography)({
+	color: '#f8b179',
+	fontSize: '2rem',
+	textAlign: 'center',
+	fontWeight: 'bold',
+	marginTop: '30px',
+})
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        backgroundColor: "#1a202c",
-        color: "#fff",
-      }}
-    >
-      <Typography variant="h2" sx={{ fontWeight: "bold", marginBottom: "2rem" }}>
-        Create Session
-      </Typography>
+const StyledSelect = styled(Select)({
+	backgroundColor: 'rgba(255, 255, 255, 0.05)',
+	color: '#000',
+	background: '#fff',
+	padding: '8px',
+	width: '125px',
+	height: '40px',
+	'& .MuiOutlinedInput-notchedOutline': {
+		borderColor: 'rgba(255, 255, 255, 0.1)',
+	},
+	'&:hover .MuiOutlinedInput-notchedOutline': {
+		borderColor: 'rgba(255, 255, 255, 0.2)',
+	},
+	'&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+		borderColor: '#f8b179',
+	},
+})
 
-      {/* Member Count */}
-      <TextField
-        type="number"
-        label="Members"
-        value={members}
-        onChange={(e) => setMembers(Number(e.target.value))}
-        sx={{
-          input: { color: "#fff" },
-          fieldset: { borderColor: "#ff7f50" },
-          "&:hover fieldset": { borderColor: "#fff" },
-        }}
-      />
+const DifficultyContainer = styled(Box)({
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	gap: '35px',
+	marginTop: '40px',
+})
 
-      {/* Duration */}
-      <Typography sx={{ marginTop: "1rem" }}>Duration (mins)</Typography>
-      <Slider
-        value={duration}
-        min={min}
-        max={max}
-        step={5}
-        onChange={(e, value) => setDuration(value)}
-        sx={{ color: "#ff7f50", width: "60%" }}
-      />
-      <Typography>{`Selected Duration: ${duration} mins`}</Typography>
+const DifficultyOption1 = styled(Box)(({ selected }) => ({
+	position: 'relative',
+	width: '50px',
+	height: '50px',
+	borderRadius: '50%',
+	backgroundColor: '#2D3250',
+	cursor: 'pointer',
+	transition: 'all 0.2s ease',
+}))
 
-      {/* Difficulty */}
-      <Typography sx={{ marginTop: "1rem" }}>Difficulty</Typography>
-      <RadioGroup
-        value={difficulty}
-        onChange={(e) => setDifficulty(e.target.value)}
-        row
-        sx={{ color: "#fff" }}
-      >
-        <FormControlLabel value="easy" control={<Radio />} label="Easy" />
-        <FormControlLabel value="medium" control={<Radio />} label="Medium" />
-        <FormControlLabel value="hard" control={<Radio />} label="Hard" />
-      </RadioGroup>
+const DifficultyOption2 = styled(Box)(({ selected }) => ({
+	position: 'absolute',
+	top: '24%',
+	left: '25%',
+	width: '25px',
+	height: '25px',
+	borderRadius: '50%',
+	backgroundColor: selected ? '#f8b179' : '',
+	cursor: 'pointer',
+	transition: 'all 0.2s ease',
+}))
 
-      {/* Create Button */}
-      <Button
-        variant="contained"
-        sx={{
-          marginTop: "2rem",
-          backgroundColor: "#ff7f50",
-          "&:hover": { backgroundColor: "#e76642" },
-        }}
-        onClick={handleCreate}
-      >
-        Create
-      </Button>
-    </Box>
-  );
-};
+const CreateButton = styled(Button)({
+	display: 'flex',
+	justifySelf: 'center',
+	backgroundColor: '#f8b179',
+	color: '#fff',
+	width: '50%',
+	padding: '1px',
+	borderRadius: '8px',
+	textTransform: 'none',
+	fontSize: '1.8rem',
+	fontWeight: 'bold',
+	marginTop: '30px',
+	'&:hover': {
+		backgroundColor: '#d89d7f',
+	},
+})
 
-export default CreateSession;
+const ModalStyle = {
+	position: 'absolute',
+	top: '50%',
+	left: '50%',
+	transform: 'translate(-50%, -50%)',
+	width: 400,
+	bgcolor: '#161E31',
+	color: '#fff',
+	border: '2px solid #000',
+	boxShadow: 24,
+	p: 4,
+}
+
+export default function CreateSession() {
+	const [members, setMembers] = useState('1')
+	const [duration, setDuration] = useState('45:00')
+	const [difficulty, setDifficulty] = useState('easy')
+	const navigate = useNavigate()
+	const [open, setOpen] = useState(false)
+	const handleOpen = () => setOpen(true)
+	const handleClose = () => setOpen(false)
+
+	const handleClick = () => {
+		if (members === '1') {
+			handleOpen()
+		} else {
+			navigate('/waiting')
+		}
+	}
+
+	return (
+		<Container>
+			<Logo variant='h1'>
+				Go
+				<span>Grok</span>
+			</Logo>
+
+			<Card>
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifySelf: 'center',
+						gap: 3,
+					}}
+				>
+					<Box sx={{ mb: 3 }}>
+						<FormLabel>Members</FormLabel>
+						<StyledSelect
+							value={members}
+							onChange={e => setMembers(e.target.value)}
+							size='medium'
+						>
+							{[1, 2, 3, 4, 5].map(num => (
+								<MenuItem
+									key={num}
+									value={num}
+									style={{ background: '#F8B179' }}
+								>
+									{num}
+								</MenuItem>
+							))}
+						</StyledSelect>
+					</Box>
+
+					<Box sx={{ mb: 3 }}>
+						<FormLabel>Duration</FormLabel>
+						<StyledSelect
+							value={duration}
+							onChange={e => setDuration(e.target.value)}
+							size='medium'
+						>
+							{['15:00', '30:00', '45:00', '60:00'].map(time => (
+								<MenuItem
+									key={time}
+									value={time}
+									style={{ background: '#F8B179' }}
+								>
+									{time}
+								</MenuItem>
+							))}
+						</StyledSelect>
+					</Box>
+				</Box>
+
+				<Box>
+					<FormLabelBold>Difficulty</FormLabelBold>
+					<DifficultyContainer>
+						{['easy', 'medium', 'hard'].map(level => (
+							<Box key={level} sx={{ textAlign: 'center' }}>
+								<DifficultyOption1
+									selected={difficulty === level}
+									onClick={() => setDifficulty(level)}
+								>
+									<DifficultyOption2
+										selected={difficulty === level}
+										onClick={() => setDifficulty(level)}
+									/>
+								</DifficultyOption1>
+								<Typography
+									sx={{
+										color: '#fff',
+										fontSize: '1rem',
+										mt: 0.5,
+										textTransform: 'capitalize',
+									}}
+								>
+									{level}
+								</Typography>
+							</Box>
+						))}
+					</DifficultyContainer>
+				</Box>
+
+				<CreateButton variant='contained' onClick={handleClick}>
+					Create
+				</CreateButton>
+				<Modal
+					open={open}
+					onClose={handleClose}
+					aria-labelledby='modal-modal-title'
+					aria-describedby='modal-modal-description'
+				>
+					<Box sx={ModalStyle}>
+						<Typography id='modal-modal-title' variant='h6' component='h2'>
+							Warning
+						</Typography>
+						<Typography id='modal-modal-description' sx={{ mt: 2 }}>
+							You can't play alone! Please select more members.
+						</Typography>
+					</Box>
+				</Modal>
+			</Card>
+		</Container>
+	)
+}
