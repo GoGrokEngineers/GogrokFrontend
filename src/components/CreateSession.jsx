@@ -223,7 +223,7 @@ export default function CreateSession() {
                   variant="standard"
                   placeholder="Enter custom time"
                   sx={{
-                    background: "#fff",
+                    background: "#676f9d",
                     borderRadius: "4px",
                     width: "100%",
 					color: "#000",
