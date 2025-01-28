@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,10 +8,35 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow"; 
-import SendIcon from "@mui/icons-material/Send"; 
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import SendIcon from "@mui/icons-material/Send";
+import { SessionContext } from "../context/SessionContext";
 
 const CodingPlatform = () => {
+  const { duration } = useContext(SessionContext);
+  const [timer, setTimer] = useState(duration * 60);
+
+  // time counting
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    } else {
+      return alert("Time is up");
+    }
+  }, [timer]);
+
+  // format time
+  const formatTime = (timer) => {
+    const minutes = Math.floor(timer / 60);
+    const remainingSeconds = timer % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
+  };
+
   return (
     <Box
       sx={{
@@ -33,10 +58,7 @@ const CodingPlatform = () => {
           borderBottom: "1px solid #3a3f47",
         }}
       >
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", color: "#ff7f50" }}
-        >
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#ff7f50" }}>
           Go<span style={{ color: "#fff" }}>Grok</span>
         </Typography>
         <Typography
@@ -49,7 +71,8 @@ const CodingPlatform = () => {
           }}
         >
           <AccessTimeIcon sx={{ marginRight: "0.5rem", color: "#ff7f50" }} />
-          22 : 14 : 14 : 11 {/* Timer */}
+          {/* Timer */}
+          {formatTime(timer)}
         </Typography>
         <Box>
           <Button
@@ -110,10 +133,12 @@ const CodingPlatform = () => {
             <Typography variant="subtitle1" sx={{ color: "#fff" }}>
               Code
             </Typography>
-            <Select
-              defaultValue="Python"
+            <Typography
               sx={{
+                paddingX: "15px",
+                paddingY: "7px",
                 color: "#fff",
+                borderRadius: "5px",
                 backgroundColor: "#3a3f47",
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: "none",
@@ -123,11 +148,8 @@ const CodingPlatform = () => {
                 },
               }}
             >
-              <MenuItem sx={{color: "#333"}} value="Python">Python</MenuItem>
-              <MenuItem sx={{color: "#333"}}  value="JavaScript">JavaScript</MenuItem>
-              <MenuItem sx={{color: "#333"}}  value="Java">Java</MenuItem>
-              <MenuItem sx={{color: "#333"}}  value="C++">C++</MenuItem>
-            </Select>
+              Python
+            </Typography>
           </Box>
           <TextField
             multiline

@@ -14,10 +14,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "'Roboto', sans-serif",
-    h1: {
-      fontFamily: "'Signika Negative' serif",
-    },
+    fontFamily: "'Hepta Slab', sans-serif",
   },
 });
 
