@@ -84,6 +84,9 @@ const WaitingRoom = () => {
 								sx={{
 									mb: 4,
 									fontWeight: 'bold',
+
+                  fontSize: '2.7rem',
+
 									alignSelf: 'start',
 									color: 'white',
 									'& span': {
@@ -123,7 +126,11 @@ const WaitingRoom = () => {
 									sx={{
 										color: '#F8B179',
 										fontWeight: 'bold',
+
 										fontSize: '4rem',
+
+										fontSize: '4.5rem',
+
 									}}
 								/>
 								<motion.div
@@ -136,7 +143,11 @@ const WaitingRoom = () => {
 										sx={{
 											color: 'white',
 											fontWeight: 'bold',
+
 											fontSize: '2.25rem',
+
+											fontSize: '3rem',
+
 											alignSelf: 'self-end',
 										}}
 									>
@@ -152,7 +163,11 @@ const WaitingRoom = () => {
 									color: 'white',
 									mb: 4,
 									fontWeight: 'bold',
+
 									fontSize: '1.6rem',
+
+									fontSize: '2rem',
+
 								}}
 							>
 								Waiting...
@@ -224,4 +239,7 @@ const WaitingRoom = () => {
 	)
 }
 
+
 export default WaitingRoom
+
+
