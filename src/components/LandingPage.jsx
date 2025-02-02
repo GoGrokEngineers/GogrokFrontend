@@ -8,7 +8,9 @@ const MatchingRoom = () => {
   const navigate = useNavigate();
   const [value, setValue] = useState("");
 
-  const handleJoin = () => {
+  const handleJoin = (e) => {
+    e.preventDefault();
+    // numbers checking full(6) or not
     if (value.length !== 6) {
       return toast.warn("Does not have enough characters!!!", {
         position: "top-right",
@@ -21,6 +23,7 @@ const MatchingRoom = () => {
         theme: "dark",
         transition: Bounce,
       });
+      // check matching
     } else if (value !== "123456") {
       return toast.warn("numbers do not match!!!", {
         position: "top-right",
@@ -37,6 +40,7 @@ const MatchingRoom = () => {
       return navigate("/waiting");
     }
   };
+  // Navigate to create page
   const handleCreate = () => {
     navigate("/create");
   };
@@ -73,33 +77,42 @@ const MatchingRoom = () => {
             borderRadius: "20px",
             paddingX: "40px",
             paddingY: "40px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          <OTPInput
-            separator={<span>-</span>}
-            value={value}
-            onChange={setValue}
-            length={6}
-          />
-          <Button
-            onClick={handleJoin}
+          <Box
             sx={{
-              width: "100px",
-              marginTop: "35px",
-              backgroundColor: "#F8B179",
-              color: "#2D3250",
-              fontWeight: 700,
-              fontSize: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
-            variant="contained"
+            component="form"
+            onSubmit={handleJoin}
           >
-            Join
-          </Button>
+            {/* to enter numbers */}
+            <OTPInput
+              separator={<span>-</span>}
+              value={value}
+              onChange={setValue}
+              length={6}
+            />
+            {/* Join button */}
+            <Button
+              type="submit"
+              sx={{
+                width: "100px",
+                marginTop: "35px",
+                backgroundColor: "#F8B179",
+                color: "#2D3250",
+                fontWeight: 700,
+                fontSize: "20px",
+              }}
+              variant="contained"
+            >
+              Join
+            </Button>
+          </Box>
         </Card>
+        {/* Create button */}
         <Button
           onClick={handleCreate}
           sx={{
