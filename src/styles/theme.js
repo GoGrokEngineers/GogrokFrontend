@@ -14,6 +14,9 @@ const theme = createTheme({
     },
   },
  
+  typography: {
+    fontFamily: "'Hepta Slab', sans-serif",
+  },
 });
 
 export default theme

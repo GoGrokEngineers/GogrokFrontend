@@ -59,7 +59,7 @@ const MatchingRoom = () => {
           <Typography
             sx={{
               fontSize: "80px",
-              fontWeight: 900,
+              fontWeight:'800',
               color: "#ffff",
               "& span": {
                 color: "#F8B179",

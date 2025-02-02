@@ -13,28 +13,28 @@ import { Bounce, ToastContainer } from "react-toastify";
 function App() {
   return (
     <div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/create" element={<CreateSession />} />
-          <Route path="/waiting" element={<WaitingRoom />} />
-          <Route path="/solving" element={<CodingPlatform />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
+        <Router>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/create" element={<CreateSession />} />
+            <Route path="/waiting" element={<WaitingRoom />} />
+            <Route path="/solving" element={<CodingPlatform />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
     </div>
   );
 }
