@@ -4,7 +4,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WaitingRoom from "./components/WaitingRoom";
 import './App.css'
 import "./App.css";
-import CodingPlatform from "./components/CodingPlatform";
+import CodingPlatform from "./components/ui/CodingPlatform";
+import LandingPage from "./components/ui/LandingPage";
+import CreateSession from "./components/ui/CreateSession";
+
 import NotFound from "./components/NotFound";
 import { Bounce, ToastContainer } from "react-toastify";
 function App() {
