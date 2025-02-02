@@ -3,15 +3,36 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WaitingRoom from "./components/WaitingRoom";
 import './App.css'
+import "./App.css";
+import CodingPlatform from "./components/CodingPlatform";
 import NotFound from "./components/NotFound";
+import { Bounce, ToastContainer } from "react-toastify";
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/waiting" element={<WaitingRoom />} />
-        <Route path="*" element={<NotFound />} /> 
-      </Routes>
-    </Router>
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/create" element={<CreateSession />} />
+          <Route path="/waiting" element={<WaitingRoom />} />
+          <Route path="/solving" element={<CodingPlatform />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
+      />
+    </div>
   );
 }
 
