@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WaitingRoom from "./components/WaitingRoom";
 import './App.css'
 import "./App.css";
-import CodingPlatform from "./components/ui/CodingPlatform";
-import LandingPage from "./components/ui/LandingPage";
-import CreateSession from "./components/ui/CreateSession";
+import CodingPlatform from "./components/CodingPlatform";
+import LandingPage from "./components/LandingPage";
+import CreateSession from "./components/CreateSession";
 
 import NotFound from "./components/NotFound";
 import { Bounce, ToastContainer } from "react-toastify";
