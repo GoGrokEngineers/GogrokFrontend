@@ -1,21 +1,21 @@
 // src/styles/theme.js
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material'
 
 const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#ff7f50",
-    },
-    secondary: {
-      main: "#1a202c",
-    },
-    text: {
-      primary: "#fff",
-    },
-  },
-  typography: {
-    fontFamily: "'Roboto', sans-serif",
-  },
-});
+	palette: {
+		primary: {
+			main: '#ff7f50',
+		},
+		secondary: {
+			main: '#1a202c',
+		},
+		text: {
+			primary: '#fff',
+		},
+	},
+	typography: {
+		fontFamily: ['Hepta Slab', 'sans-serif'].join(','),
+	},
+})
 
-export default theme;
+export default theme
