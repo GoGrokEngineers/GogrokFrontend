@@ -138,8 +138,7 @@ const ModalStyle = {
 };
 
 export default function CreateSession() {
-  const { duration, setDuration } = useContext(SessionContext);
-  const [members, setMembers] = useState("1");
+  const { duration, setDuration, members, setMembers, setRole } = useContext(SessionContext);
   const [difficulty, setDifficulty] = useState("easy");
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -151,6 +150,7 @@ export default function CreateSession() {
       handleOpen();
     } else {
       navigate("/waiting");
+      setRole("creater");
     }
   };
   const handleDurationInput = (e) => {
