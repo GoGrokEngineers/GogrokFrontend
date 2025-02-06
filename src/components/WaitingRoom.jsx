@@ -1,37 +1,36 @@
-import { useEffect, useState } from 'react'
-import { Box, Typography, Button, Container, TextField } from '@mui/material'
+import { useContext, useEffect, useState } from 'react'
+import { Box, Typography, Button, Container } from '@mui/material'
 import { Person } from '@mui/icons-material'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { SessionContext } from '../context/SessionContext'
+import OTPInput from './ui/opt-input'
+import { Bounce, toast } from 'react-toastify'
 
 const WaitingRoom = () => {
-	const [membersJoined, setMembersJoined] = useState(6)
-	const [maxMembers, setMaxMembers] = useState(10)
-	const [sessionCode, setSessionCode] = useState('123456')
+	const [membersJoined, setMembersJoined] = useState(0)
+	const { members, value, setValue, role } = useContext(SessionContext)
 	const [loading, setLoading] = useState(false)
-
-	const navigate = useNavigate()
+	const [hasWarned, setHasWarned] = useState(false)
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			if (membersJoined < maxMembers) {
-				setMembersJoined(prev => prev + 1)
-			}
-		}, 3000)
+		if(!value) {
+			navigate('/')
+		}
+	})
 
-		return () => clearInterval(interval)
-	}, [membersJoined, maxMembers])
+	const navigate = useNavigate()
 
 	const handleStart = async () => {
 		setLoading(true)
 		try {
 			// Send POST request to the API
 			const response = await axios.post(
-				'http://139.162.134.90:8000/api/competition/create',
+				'http://139.162.134.90:8000/api/competition/',
 				{
-					session_code: sessionCode, // Example data
-					max_members: maxMembers,
+					session_code: value,
+					max_members: members,
 					members_joined: membersJoined,
 				}
 			)
@@ -44,6 +43,28 @@ const WaitingRoom = () => {
 			alert('Failed to start the session. Please try again.')
 		} finally {
 			setLoading(false)
+		}
+	}
+
+	const changeNumber = () => {
+		if (setValue) {
+			if (!hasWarned) {
+				// Faqat 1 marta va keyingi 3 sekundan keyin ishlaydi
+				toast.warn("You can't change number!", {
+					position: 'top-right',
+					autoClose: 3000,
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: 'dark',
+					transition: Bounce,
+				})
+
+				setHasWarned(true) // Flagni true qilish
+				setTimeout(() => setHasWarned(false), 4000) // 3 sekunddan keyin qayta ishlaydi
+			}
 		}
 	}
 
@@ -81,13 +102,13 @@ const WaitingRoom = () => {
 						>
 							<Typography
 								variant='h4'
+								onClick={() => navigate('/')}
 								sx={{
 									mb: 4,
 									fontWeight: 'bold',
-
-                  fontSize: '2.7rem',
-
+									fontSize: '2.7rem',
 									alignSelf: 'start',
+									cursor: 'pointer',
 									color: 'white',
 									'& span': {
 										color: '#F8B179',
@@ -126,11 +147,7 @@ const WaitingRoom = () => {
 									sx={{
 										color: '#F8B179',
 										fontWeight: 'bold',
-
-										fontSize: '4rem',
-
 										fontSize: '4.5rem',
-
 									}}
 								/>
 								<motion.div
@@ -143,15 +160,11 @@ const WaitingRoom = () => {
 										sx={{
 											color: 'white',
 											fontWeight: 'bold',
-
-											fontSize: '2.25rem',
-
 											fontSize: '3rem',
-
 											alignSelf: 'self-end',
 										}}
 									>
-										{membersJoined} / {maxMembers}
+										{membersJoined} / {members}
 									</Typography>
 								</motion.div>
 							</Box>
@@ -163,17 +176,13 @@ const WaitingRoom = () => {
 									color: 'white',
 									mb: 4,
 									fontWeight: 'bold',
-
-									fontSize: '1.6rem',
-
 									fontSize: '2rem',
-
 								}}
 							>
 								Waiting...
 							</Typography>
 
-							{/* Animated Dots */}
+							{/* disabled OTP input */}
 							<motion.div
 								initial={{ opacity: 0, x: -50 }}
 								animate={{ opacity: 1, x: 0 }}
@@ -190,18 +199,16 @@ const WaitingRoom = () => {
 									borderRadius: '10px',
 								}}
 							>
-								{[...Array(6)].map((_, i) => (
-									<motion.div
-										key={i}
-										initial='initial'
-										style={{
-											width: 30,
-											height: 30,
-											backgroundColor: '#fff',
-											borderRadius: 5,
-										}}
-									/>
-								))}
+								<OTPInput
+									separator={<span>-</span>}
+									value={value && value}
+									onChange={changeNumber}
+									disabled={loading}
+									length={6}
+									style={{
+										cursor: 'not-allowed',
+									}}
+								/>
 							</motion.div>
 
 							{/* Start Button */}
@@ -210,8 +217,32 @@ const WaitingRoom = () => {
 								animate={{ scale: 1 }}
 								transition={{ duration: 0.4 }}
 							>
-								<Button
+								{role === 'joiner' ? (
+									<Button
 									variant='contained'
+									disabled={loading}
+									onClick={handleStart}
+									sx={{
+										bgcolor: '#F8B179',
+										color: 'white',
+										px: 6.5,
+										py: 0.5,
+										borderRadius: 2,
+										mb: 5,
+										textTransform: 'none',
+										fontSize: '1.8rem',
+										fontWeight: 'bold',
+										'&:hover': {
+											bgcolor: '#F8B179',
+										},
+									}}
+								>
+									Ready
+								</Button>
+								): 'creater' && (
+									<Button
+									variant='contained'
+									disabled={loading}
 									onClick={handleStart}
 									sx={{
 										bgcolor: '#F8B179',
@@ -230,6 +261,8 @@ const WaitingRoom = () => {
 								>
 									Start
 								</Button>
+								)}
+								
 							</motion.div>
 						</Box>
 					</Box>
@@ -239,7 +272,4 @@ const WaitingRoom = () => {
 	)
 }
 
-
 export default WaitingRoom
-
-
