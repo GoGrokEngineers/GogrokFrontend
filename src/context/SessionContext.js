@@ -1,13 +1,11 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 export const SessionContext = createContext();
 
 const SessionProvider = ({ children }) => {
-  const [duration, setDuration] = useState(1);
   return (
-    <SessionContext.Provider value={{ duration, setDuration }}>
-      {children}
-    </SessionContext.Provider>
+    <SessionContext.Provider value={{}}>{children}</SessionContext.Provider>
   );
 };
 

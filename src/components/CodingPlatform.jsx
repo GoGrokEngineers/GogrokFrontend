@@ -10,11 +10,15 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SendIcon from "@mui/icons-material/Send";
-import { SessionContext } from "../context/SessionContext";
+import { GetData, RemoveData } from "../localstorage/savedata";
 
 const CodingPlatform = () => {
-  const { duration } = useContext(SessionContext);
-  const [timer, setTimer] = useState(duration * 60);
+  const [timer, setTimer] = useState(null);
+
+  useEffect(() => {
+    const savedData = GetData("data");
+    setTimer(savedData.duration * 60);
+  }, []);
 
   // time counting
   useEffect(() => {
@@ -23,8 +27,8 @@ const CodingPlatform = () => {
         setTimer((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(interval);
-    } else {
-      return alert("Time is up");
+    } else if (timer === 0) {
+      return RemoveData("data");
     }
   }, [timer]);
 
@@ -70,10 +74,18 @@ const CodingPlatform = () => {
             borderRadius: "5px",
           }}
         >
-          <AccessTimeIcon sx={{ marginRight: "0.5rem", color: "#ff7f50" }} />
-          {/* Timer */}
-          {formatTime(timer)}
+          {timer === null ? (
+            "loading..."
+          ) : (
+            <>
+              <AccessTimeIcon
+                sx={{ marginRight: "0.5rem", color: "#ff7f50" }}
+              />
+              {formatTime(timer)}
+            </>
+          )}
         </Typography>
+
         <Box>
           <Button
             variant="contained"
