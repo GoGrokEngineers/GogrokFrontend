@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -13,7 +14,8 @@ import SendIcon from "@mui/icons-material/Send";
 import { SessionContext } from "../context/SessionContext";
 
 const CodingPlatform = () => {
-  const { duration } = useContext(SessionContext);
+  const navigate = useNavigate();
+  const { duration } = useContext(SessionContext) || { duration: 10 };
   const [timer, setTimer] = useState(duration * 60);
 
   // time counting
@@ -24,9 +26,10 @@ const CodingPlatform = () => {
       }, 1000);
       return () => clearInterval(interval);
     } else {
-      return alert("Time is up");
+      alert("Time is up");
+      navigate("/leaderboard");
     }
-  }, [timer]);
+  }, [timer, navigate]);
 
   // format time
   const formatTime = (timer) => {
@@ -43,7 +46,7 @@ const CodingPlatform = () => {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        backgroundColor: "#1a202c",
+        backgroundColor: "#161E31",
         color: "#fff",
         padding: "1rem",
       }}
@@ -55,22 +58,22 @@ const CodingPlatform = () => {
           justifyContent: "space-between",
           alignItems: "center",
           padding: "0.5rem 1rem",
-          borderBottom: "1px solid #3a3f47",
+          borderBottom: "1px solid #2D3250",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#ff7f50" }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", fontSize: "2rem", color: "#f8b179" }}>
           Go<span style={{ color: "#fff" }}>Grok</span>
         </Typography>
         <Typography
           sx={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "#3a3f47",
+            backgroundColor: "#2D3250",
             padding: "0.5rem 1rem",
             borderRadius: "5px",
           }}
         >
-          <AccessTimeIcon sx={{ marginRight: "0.5rem", color: "#ff7f50" }} />
+          <AccessTimeIcon sx={{ marginRight: "0.5rem", color: "#f8b179" }} />
           {/* Timer */}
           {formatTime(timer)}
         </Typography>
@@ -78,18 +81,7 @@ const CodingPlatform = () => {
           <Button
             variant="contained"
             sx={{
-              marginRight: "1rem",
-              backgroundColor: "#3a3f47",
-              "&:hover": { backgroundColor: "#4e535b" },
-            }}
-            startIcon={<PlayArrowIcon />}
-          >
-            Run
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#ff7f50",
+              backgroundColor: "#f8b179",
               "&:hover": { backgroundColor: "#e76642" },
             }}
             startIcon={<SendIcon />}
@@ -117,7 +109,7 @@ const CodingPlatform = () => {
             gridRow: "1 / span 2",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "#2d333b",
+            backgroundColor: "#424669",
             borderRadius: "8px",
             padding: "1rem",
           }}
@@ -139,7 +131,7 @@ const CodingPlatform = () => {
                 paddingY: "7px",
                 color: "#fff",
                 borderRadius: "5px",
-                backgroundColor: "#3a3f47",
+                backgroundColor: "#2D3250",
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: "none",
                 },
@@ -161,10 +153,10 @@ const CodingPlatform = () => {
               height: "100%",
               "& .MuiOutlinedInput-root": {
                 color: "#fff",
-                backgroundColor: "#1a202c",
+                backgroundColor: "#161E31",
               },
               "& .MuiOutlinedInput-notchedOutline": {
-                border: "1px solid #3a3f47",
+                border: "1px solid #2D3250",
               },
             }}
           />
@@ -175,7 +167,7 @@ const CodingPlatform = () => {
           sx={{
             gridColumn: "2 / span 1",
             gridRow: "1 / span 1",
-            backgroundColor: "#2d333b",
+            backgroundColor: "#424669",
             borderRadius: "8px",
             padding: "1rem",
           }}
@@ -196,13 +188,12 @@ const CodingPlatform = () => {
             </Typography>
           </Box>
         </Box>
-
         {/* Testcase */}
         <Box
           sx={{
             gridColumn: "2 / span 1",
             gridRow: "2 / span 1",
-            backgroundColor: "#2d333b",
+            backgroundColor: "#424669",
             borderRadius: "8px",
             padding: "1rem",
           }}
@@ -219,10 +210,10 @@ const CodingPlatform = () => {
               width: "100%",
               "& .MuiOutlinedInput-root": {
                 color: "#fff",
-                backgroundColor: "#1a202c",
+                backgroundColor: "#161E31",
               },
               "& .MuiOutlinedInput-notchedOutline": {
-                border: "1px solid #3a3f47",
+                border: "1px solid #2D3250",
               },
             }}
           />
@@ -233,3 +224,4 @@ const CodingPlatform = () => {
 };
 
 export default CodingPlatform;
+

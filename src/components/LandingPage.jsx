@@ -42,6 +42,9 @@ const MatchingRoom = () => {
       return navigate("/waiting");
     }
   };
+  const handleCreate = () => {
+    navigate("/create");
+  };
   return (
     <div>
       <Box
