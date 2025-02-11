@@ -27,12 +27,7 @@ const WaitingRoom = () => {
 		try {
 			// Send POST request to the API
 			const response = await axios.post(
-				'http://139.162.134.90:8000/api/competition/',
-				{
-					session_code: value,
-					max_members: members,
-					members_joined: membersJoined,
-				}
+				'http://139.162.134.90:8000/api/competition/'
 			)
 			console.log('API Response:', response.data)
 
