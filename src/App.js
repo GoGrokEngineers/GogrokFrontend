@@ -10,7 +10,6 @@ import CreateSession from "./components/CreateSession";
 
 import NotFound from "./components/NotFound";
 import { Bounce, ToastContainer } from "react-toastify";
-import CompetitionData from './components/CompetitionData '
 function App() {
   return (
     <div>
@@ -20,7 +19,6 @@ function App() {
             <Route path="/create" element={<CreateSession />} />
             <Route path="/waiting" element={<WaitingRoom />} />
             <Route path="/solving" element={<CodingPlatform />} />
-            <Route path="/pro" element={<CompetitionData />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
