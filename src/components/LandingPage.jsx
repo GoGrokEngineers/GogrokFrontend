@@ -8,7 +8,7 @@ import { SessionContext } from '../context/SessionContext'
 
 const MatchingRoom = () => {
   const navigate = useNavigate();
-  const { value, setValue, setRole } = useContext(SessionContext);
+  const { value, setValue } = useContext(SessionContext);
 
   const handleJoin = (e) => {
     e.preventDefault();
@@ -42,6 +42,8 @@ const MatchingRoom = () => {
       return navigate("/waiting");
     }
   };
+
+
   const handleCreate = () => {
     navigate("/create");
   };
