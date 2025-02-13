@@ -1,12 +1,14 @@
 import { Box, Button, Card, Typography } from "@mui/material";
-import { useState } from "react";
+
 import OTPInput from "./ui/opt-input";
 import { useNavigate } from "react-router-dom";
 import { Bounce, toast } from "react-toastify";
+import { useContext } from 'react'
+import { SessionContext } from '../context/SessionContext'
 
 const MatchingRoom = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("");
+  const { value, setValue } = useContext(SessionContext);
 
   const handleJoin = (e) => {
     e.preventDefault();
@@ -40,11 +42,11 @@ const MatchingRoom = () => {
       return navigate("/waiting");
     }
   };
-  // Navigate to create page
+
+
   const handleCreate = () => {
     navigate("/create");
   };
-
   return (
     <div>
       <Box

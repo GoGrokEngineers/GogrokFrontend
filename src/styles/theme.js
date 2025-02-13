@@ -1,5 +1,5 @@
 // src/styles/theme.js
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material'
 
 const theme = createTheme({
   palette: {
@@ -13,9 +13,10 @@ const theme = createTheme({
       primary: "#fff",
     },
   },
+ 
   typography: {
     fontFamily: "'Hepta Slab', sans-serif",
   },
 });
 
-export default theme;
+export default theme
