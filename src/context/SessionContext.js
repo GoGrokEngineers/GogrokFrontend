@@ -1,8 +1,19 @@
+
+import React, { createContext, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
 import React, { createContext, useState } from 'react'
+
 
 export const SessionContext = createContext()
 
 const SessionProvider = ({ children }) => {
+
+  return (
+    <SessionContext.Provider value={{}}>{children}</SessionContext.Provider>
+  );
+};
+
 	const [duration, setDuration] = useState(1)
 	const [members, setMembers] = useState('1')
 	const [value, setValue] = useState('')
@@ -15,5 +26,6 @@ const SessionProvider = ({ children }) => {
 		</SessionContext.Provider>
 	)
 }
+
 
 export default SessionProvider

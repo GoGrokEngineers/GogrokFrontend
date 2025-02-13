@@ -12,12 +12,21 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SendIcon from "@mui/icons-material/Send";
-import { SessionContext } from "../context/SessionContext";
+import { GetData, RemoveData } from "../localstorage/savedata";
 
 const CodingPlatform = () => {
+
+  const [timer, setTimer] = useState(null);
+
+  useEffect(() => {
+    const savedData = GetData("data");
+    setTimer(savedData.duration * 60);
+  }, []);
+
   const navigate = useNavigate();
   const { duration } = useContext(SessionContext) || { duration: 10 };
   const [timer, setTimer] = useState(duration * 60);
+
 
   // time counting
   useEffect(() => {
@@ -26,9 +35,14 @@ const CodingPlatform = () => {
         setTimer((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(interval);
+
+    } else if (timer === 0) {
+      return RemoveData("data");
+
     } else {
       alert("Time is up");
       navigate("/leaderboard");
+
     }
   }, [timer, navigate]);
 
@@ -101,10 +115,24 @@ const CodingPlatform = () => {
             borderRadius: "5px",
           }}
         >
+
+          {timer === null ? (
+            "loading..."
+          ) : (
+            <>
+              <AccessTimeIcon
+                sx={{ marginRight: "0.5rem", color: "#ff7f50" }}
+              />
+              {formatTime(timer)}
+            </>
+          )}
+
           <AccessTimeIcon sx={{ marginRight: "0.5rem", color: "#f8b179" }} />
           {/* Timer */}
           {formatTime(timer)}
+
         </Typography>
+
         <Box>
           <Button
             variant="contained"
