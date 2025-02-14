@@ -5,12 +5,14 @@ import { Person } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GetData } from "../localstorage/savedata";
 
 const WaitingRoom = () => {
   const [membersJoined, setMembersJoined] = useState(6);
   const [maxMembers, setMaxMembers] = useState(10);
   const [sessionCode, setSessionCode] = useState("123456");
   const [loading, setLoading] = useState(false);
+  const uid = GetData("data").uid;
 
   const navigate = useNavigate();
 

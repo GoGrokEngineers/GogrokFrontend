@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
 import ApiService from "../services/api-serives";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
+import WebsocketServices from "../services/web-socket";
 
 import { useContext, useState } from 'react'
 import {
@@ -172,10 +173,9 @@ export default function CreateSession() {
 
   const { mutate, error, isLoading, isSuccess, data } = useCreateCompetition();
   const onSubmit = (e) => {
-    SaveData(e);
     mutate(e, {
       onSuccess: (response) => {
-        toast.success(`${response.message} code:${response.competition_uid}`, {
+        toast.success(`${response.message} `, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -185,8 +185,9 @@ export default function CreateSession() {
           theme: "dark",
           transition: Bounce,
         });
-        // navigate("/waiting");
-        console.log(response);
+        SaveData({ ...e, uid: response.competition_uid });
+        WebsocketServices.Handshake(response.competition_uid);
+        navigate("/waiting");
       },
       onError: (error) => {
         toast.warn(error.response.data.errors.duration[0], {
@@ -204,8 +205,8 @@ export default function CreateSession() {
   };
 
   const onError = (errors) => {
-    if (errors.members) {
-      toast.warn(errors.members.message, {
+    if (errors.capacity) {
+      toast.warn(errors.capacity.message, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
