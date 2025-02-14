@@ -6,7 +6,6 @@ export const SessionContext = createContext();
 const SessionProvider = ({ children }) => {
   const [duration, setDuration] = useState(1);
   const [members, setMembers] = useState("1");
-  const [value, setValue] = useState("");
   const [role, setRole] = useState("joiner");
   return (
     <SessionContext.Provider
@@ -15,8 +14,6 @@ const SessionProvider = ({ children }) => {
         setDuration,
         members,
         setMembers,
-        value,
-        setValue,
         role,
         setRole,
       }}

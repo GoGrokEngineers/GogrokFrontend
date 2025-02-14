@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Container, TextField } from "@mui/material";
 import { Person } from "@mui/icons-material";
@@ -9,46 +8,11 @@ import { GetData } from "../localstorage/savedata";
 
 const WaitingRoom = () => {
   const [membersJoined, setMembersJoined] = useState(6);
-  const [maxMembers, setMaxMembers] = useState(10);
-  const [sessionCode, setSessionCode] = useState("123456");
-  const [loading, setLoading] = useState(false);
+  const maxMembers = GetData("data").capacity;
   const uid = GetData("data").uid;
-
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (membersJoined < maxMembers) {
-        setMembersJoined((prev) => prev + 1);
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [membersJoined, maxMembers]);
-
-  const handleStart = async () => {
-    setLoading(true);
-    try {
-      // Send POST request to the API
-      const response = await axios.post(
-        "http://139.162.134.90:8000/api/competition/create",
-        {
-          session_code: sessionCode, // Example data
-          max_members: maxMembers,
-          members_joined: membersJoined,
-        }
-      );
-      console.log("API Response:", response.data);
-
-      // Navigate to the solving page
-      navigate("/solving");
-    } catch (error) {
-      console.error("Error starting the session:", error);
-      alert("Failed to start the session. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleStart = async () => {};
 
   return (
     <motion.div
@@ -179,19 +143,31 @@ const WaitingRoom = () => {
                   borderRadius: "10px",
                 }}
               >
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial="initial"
-                    style={{
-                      width: 30,
-                      height: 30,
-                      backgroundColor: "#fff",
-                      borderRadius: 5,
-                    }}
-                  />
-                ))}
+                {uid
+                  .toString()
+                  .split("")
+                  .map((num, i) => (
+                    <motion.div
+                      key={i}
+                      initial="initial"
+                      style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: "#fff",
+                        borderRadius: 5,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "#161E31",
+                      }}
+                    >
+                      {num}
+                    </motion.div>
+                  ))}
               </motion.div>
+
               <motion.div
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
@@ -260,5 +236,3 @@ const WaitingRoom = () => {
 };
 
 export default WaitingRoom;
-
-
