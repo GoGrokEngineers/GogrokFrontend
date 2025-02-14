@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -14,13 +14,11 @@ import {
   Radio,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { SessionContext } from "../context/SessionContext";
 import { Bounce, toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
-import ApiService from "../services/api-serives";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
-import WebsocketServices from "../services/web-socket";
+import { WsConnection } from "../services/web-socket";
 
 // Custom styled components
 const Container = styled(Box)({
@@ -168,6 +166,7 @@ export default function CreateSession() {
   const handleClose = () => setOpen(false);
 
   const { mutate, error, isLoading, isSuccess, data } = useCreateCompetition();
+
   const onSubmit = (e) => {
     mutate(e, {
       onSuccess: (response) => {
@@ -182,8 +181,15 @@ export default function CreateSession() {
           transition: Bounce,
         });
         SaveData({ ...e, uid: response.competition_uid });
-        WebsocketServices.Handshake(response.competition_uid);
-        navigate("/waiting");
+        WsConnection(response.competition_uid) // Websocket connection
+          .then((response) => {
+            if (response.isOpen) {
+              navigate("/waiting");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       },
       onError: (error) => {
         toast.warn(error.response.data.errors.duration[0], {

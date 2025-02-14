@@ -25,8 +25,7 @@ const MatchingRoom = () => {
       return;
     }
     try {
-      const response = await WebsocketServices.Handshake(inputValue);
-      if (response.success === true) {
+      if (null) {
         toast.success("successfully joined", {
           position: "top-right",
           autoClose: 3000,
