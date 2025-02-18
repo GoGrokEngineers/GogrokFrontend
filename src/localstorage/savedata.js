@@ -10,4 +10,5 @@ const RemoveData = (key) => {
   localStorage.removeItem(key);
 };
 
+
 export { SaveData, GetData, RemoveData };
