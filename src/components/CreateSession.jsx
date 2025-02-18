@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -18,6 +18,7 @@ import { Bounce, toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
+import { WsConnection } from "../services/web-socket";
 
 // Custom styled components
 const Container = styled(Box)({
