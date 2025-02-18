@@ -14,11 +14,9 @@ import {
   Radio,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { SessionContext } from "../context/SessionContext";
 import { Bounce, toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
-import ApiService from "../services/api-serives";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
 
 // Custom styled components
@@ -167,11 +165,11 @@ export default function CreateSession() {
   const handleClose = () => setOpen(false);
 
   const { mutate, error, isLoading, isSuccess, data } = useCreateCompetition();
+
   const onSubmit = (e) => {
-    SaveData(e);
     mutate(e, {
       onSuccess: (response) => {
-        toast.success(`${response.message} code:${response.competition_uid}`, {
+        toast.success(`${response.message} `, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -181,8 +179,16 @@ export default function CreateSession() {
           theme: "dark",
           transition: Bounce,
         });
-        // navigate("/waiting");
-        console.log(response);
+        SaveData({ ...e, uid: response.competition_uid });
+        WsConnection(response.competition_uid) // Websocket connection
+          .then((response) => {
+            if (response.isOpen) {
+              navigate("/waiting");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       },
       onError: (error) => {
         toast.warn(error.response.data.errors.duration[0], {
@@ -200,8 +206,8 @@ export default function CreateSession() {
   };
 
   const onError = (errors) => {
-    if (errors.members) {
-      toast.warn(errors.members.message, {
+    if (errors.capacity) {
+      toast.warn(errors.capacity.message, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
