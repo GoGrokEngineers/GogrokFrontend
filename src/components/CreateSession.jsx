@@ -155,8 +155,8 @@ export default function CreateSession() {
   } = useForm({
     defaultValues: {
       difficulty: "Easy",
-      duration: 15,
-      capacity: 1,
+      duration: 30,
+      capacity: 2,
     },
   });
   const duration = watch("duration");
@@ -246,7 +246,7 @@ export default function CreateSession() {
                 type="number"
                 {...register("capacity", {
                   required: true,
-                  min: { value: 1, message: "Must be greater than 0" },
+                  min: { value: 2, message: "Must be at least 2" },
                 })}
                 InputLabelProps={{ shrink: false }}
                 sx={{
@@ -285,7 +285,7 @@ export default function CreateSession() {
                 {...register("duration", { required: true })}
                 value={duration}
               >
-                {[15, 30, 45, 60].map((time) => (
+                {[30, 60, 90].map((time) => (
                   <MenuItem
                     key={time}
                     value={time}
@@ -294,29 +294,6 @@ export default function CreateSession() {
                     {time} : min
                   </MenuItem>
                 ))}
-                <MenuItem style={{ background: "#F8B179" }}>
-                  <TextField
-                    {...register("duration", { required: true })}
-                    type="number"
-                    required
-                    onClick={(e) => e.stopPropagation()}
-                    onFocus={(e) => e.stopPropagation()}
-                    onBlur={() => console.log("Blur event triggered")}
-                    onChange={(e) => setValue("duration", e.target.value)}
-                    variant="standard"
-                    placeholder="Enter custom time"
-                    sx={{
-                      background: "#676f9d",
-                      borderRadius: "4px",
-                      width: "100%",
-                      color: "#000",
-                    }}
-                    inputProps={{
-                      min: "0",
-                      style: { padding: "5px", fontSize: "1rem" },
-                    }}
-                  />
-                </MenuItem>
               </StyledSelect>
             </Box>
           </Box>
