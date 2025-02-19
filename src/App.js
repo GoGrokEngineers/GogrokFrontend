@@ -19,7 +19,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/create" element={<CreateSession />} />
             <Route path="/waiting" element={<WaitingRoom />} />
-            <Route path="/solving" element={<CodingPlatform />} />
+            <Route path="/competition" element={<CodingPlatform />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
