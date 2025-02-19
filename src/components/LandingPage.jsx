@@ -11,7 +11,7 @@ const MatchingRoom = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (inputValue.length !== 6 || inputValue.length === "") {
+    if (inputValue.length !== 6 || inputValue.length === 0) {
       toast.warn("Must be 6 character", {
         position: "top-right",
         autoClose: 3000,
@@ -55,6 +55,7 @@ const MatchingRoom = () => {
   const handleCreate = () => {
     navigate("/create");
   };
+
   return (
     <div>
       <Box
@@ -71,6 +72,7 @@ const MatchingRoom = () => {
               fontSize: "80px",
               fontWeight: "800",
               color: "#ffff",
+              userSelect: "none",
               "& span": {
                 color: "#F8B179",
               },
@@ -98,7 +100,7 @@ const MatchingRoom = () => {
             }}
             component="form"
           >
-            {/* to enter numbers */}
+            {/* OTP Input for numbers */}
             <OTPInput
               value={inputValue}
               onChange={setInputValue}
@@ -123,9 +125,10 @@ const MatchingRoom = () => {
           </Box>
         </Card>
 
-        {/* Create button */}
+        {/* Create button becomes disabled if any digit is entered */}
         <Button
           onClick={handleCreate}
+          disabled={inputValue.length > 0}
           sx={{
             width: "140px",
             marginTop: "35px",
