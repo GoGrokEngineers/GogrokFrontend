@@ -2,12 +2,14 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WaitingRoom from "./components/WaitingRoom";
-import './App.css'
 import "./App.css";
+import Home from "./pages/Home";
+import About from "./pages/About";
 import CodingPlatform from "./components/CodingPlatform";
 import LandingPage from "./components/LandingPage";
 import CreateSession from "./components/CreateSession";
 import Leaderboard from "./components/Leadboard";
+import Footer from "./components/Footer";
 
 import NotFound from "./components/NotFound";
 import { Bounce, ToastContainer } from "react-toastify";
@@ -16,7 +18,9 @@ function App() {
     <div>
         <Router>  
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Home/>} />
+            <Route path="/about" element={<About/>} />
+            <Route path="/main" element={<LandingPage />} />
             <Route path="/create" element={<CreateSession />} />
             <Route path="/waiting" element={<WaitingRoom />} />
             <Route path="/competition" element={<CodingPlatform />} />
@@ -37,6 +41,7 @@ function App() {
           theme="dark"
           transition={Bounce}
         />
+        <Footer />
     </div>
   );
 }
