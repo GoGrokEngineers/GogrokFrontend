@@ -6,7 +6,6 @@ import {
   MenuItem,
   Button,
   styled,
-  Modal,
   TextField,
   FormControl,
   RadioGroup,
@@ -19,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
 import { WsConnection } from "../services/web-socket";
+import { motion } from "framer-motion"; // Import Framer Motion
 
 // Custom styled components
 const Container = styled(Box)({
@@ -43,12 +43,13 @@ const Logo = styled(Typography)({
   },
 });
 
-const Card = styled(Box)({
+const Card = styled(motion(Box))({
   backgroundColor: "#424669",
   borderRadius: "16px",
   padding: "25px",
   width: "350px",
   height: "450px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)", // Subtle shadow
 });
 
 const FormLabel = styled(Typography)({
@@ -66,21 +67,51 @@ const FormLabelBold = styled(Typography)({
   marginTop: "30px",
 });
 
+const StyledTextField = styled(TextField)({
+  "& .MuiOutlinedInput-root": {
+    color: "black",
+    backgroundColor: "white",
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
+    "& fieldset": {
+      borderColor: "lightgray",
+    },
+    "&:hover fieldset": {
+      borderColor: "#F8B179",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#F8B179",
+      boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)", // Glow effect
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#F8B179",
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#F8B179",
+  },
+  "& .MuiOutlinedInput-input": {
+    padding: "10px",
+  },
+});
+
 const StyledSelect = styled(Select)({
-  backgroundColor: "rgba(255, 255, 255, 0.05)",
-  color: "#000",
-  background: "#fff",
+  backgroundColor: "white",
+  color: "black",
+  borderRadius: "8px",
   padding: "8px",
   width: "125px",
   height: "40px",
+  transition: "all 0.3s ease",
   "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "lightgray",
   },
   "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: "#F8B179",
   },
   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#f8b179",
+    borderColor: "#F8B179",
+    boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)", // Glow effect
   },
 });
 
@@ -88,61 +119,41 @@ const DifficultyContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  gap: "35px",
+  gap: "20px",
   marginTop: "40px",
 });
 
-const DifficultyOption1 = styled(Box)(({ selected }) => ({
-  position: "relative",
-  width: "50px",
-  height: "50px",
+const DifficultyOption = styled(motion(Box))(({ selected }) => ({
+  width: "40px",
+  height: "40px",
   borderRadius: "50%",
-  backgroundColor: "#2D3250",
+  backgroundColor: selected ? "#F8B179" : "#2D3250",
   cursor: "pointer",
-  transition: "all 0.2s ease",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "background-color 0.3s ease",
+  "&:hover": {
+    backgroundColor: selected ? "#F8B179" : "#3a4060",
+  },
 }));
 
-const DifficultyOption2 = styled(Box)(({ selected }) => ({
-  position: "absolute",
-  top: "24%",
-  left: "25%",
-  width: "25px",
-  height: "25px",
-  borderRadius: "50%",
-  backgroundColor: selected ? "#f8b179" : "",
-  cursor: "pointer",
-  transition: "all 0.2s ease",
-}));
-
-const CreateButton = styled(Button)({
+const CreateButton = styled(motion(Button))({
   display: "flex",
   justifySelf: "center",
   backgroundColor: "#f8b179",
   color: "#fff",
   width: "50%",
-  padding: "1px",
+  padding: "10px",
   borderRadius: "8px",
   textTransform: "none",
   fontSize: "1.8rem",
   fontWeight: "bold",
-  marginTop: "30px",
+  margin: "30px auto",
   "&:hover": {
     backgroundColor: "#d89d7f",
   },
 });
-
-const ModalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "#161E31",
-  color: "#fff",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function CreateSession() {
   const {
@@ -160,17 +171,14 @@ export default function CreateSession() {
     },
   });
   const duration = watch("duration");
+  const difficulty = watch("difficulty");
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
   const { mutate, error, isLoading, isSuccess, data } = useCreateCompetition();
 
   const onSubmit = (e) => {
     mutate(e, {
       onSuccess: (response) => {
-        toast.success(`${response.message} `, {
+        toast.success(`${response.message}`, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -181,7 +189,7 @@ export default function CreateSession() {
           transition: Bounce,
         });
         SaveData({ ...e, uid: response.competition_uid });
-        WsConnection(response.competition_uid) // Websocket connection
+        WsConnection(response.competition_uid)
           .then((response) => {
             if (response.isOpen) {
               navigate("/waiting");
@@ -192,7 +200,7 @@ export default function CreateSession() {
           });
       },
       onError: (error) => {
-        toast.warn(error.response.data.errors.duration[0], {
+        toast.warn(error.response?.data?.errors?.duration?.[0] || "Error creating session", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -221,6 +229,22 @@ export default function CreateSession() {
     }
   };
 
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
+
+  const inputVariants = {
+    initial: { scale: 1 },
+    focused: { scale: 1.02, transition: { duration: 0.2 } },
+  };
+
+  const buttonVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.3, yoyo: Infinity } },
+    tap: { scale: 0.95 },
+  };
+
   return (
     <Container>
       <Logo variant="h1">
@@ -228,7 +252,7 @@ export default function CreateSession() {
         <span>Grok</span>
       </Logo>
 
-      <Card>
+      <Card initial="hidden" animate="visible" variants={cardVariants}>
         <form onSubmit={handleSubmit(onSubmit, onError)}>
           <Box
             sx={{
@@ -241,121 +265,99 @@ export default function CreateSession() {
           >
             <Box sx={{ mb: 3 }}>
               <FormLabel>Members</FormLabel>
-              <TextField
-                variant="outlined"
-                type="number"
-                {...register("capacity", {
-                  required: true,
-                  min: { value: 2, message: "Must be at least 2" },
-                })}
-                InputLabelProps={{ shrink: false }}
-                sx={{
-                  width: "125px",
-                  height: "41px",
-                  "& .MuiOutlinedInput-root": {
-                    color: "black",
-                    backgroundColor: "white",
-                    "& fieldset": {
-                      borderColor: "lightgray",
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "gray",
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#F8B179",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "#F8B179",
-                  },
-                  "& .MuiInputLabel-root.Mui-focused": {
-                    color: "black",
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    padding: "8px",
-                  },
-                }}
-              />
+              <motion.div variants={inputVariants} initial="initial" whileFocus="focused">
+                <StyledTextField
+                  variant="outlined"
+                  type="number"
+                  placeholder="Enter members"
+                  {...register("capacity", {
+                    required: true,
+                    min: { value: 2, message: "Must be at least 2" },
+                  })}
+                  InputLabelProps={{ shrink: false }}
+                  sx={{ width: "125px", height: "41px" }}
+                />
+              </motion.div>
             </Box>
 
             <Box sx={{ mb: 3 }}>
               <FormLabel>Duration</FormLabel>
-              <StyledSelect
-                size="medium"
-                {...register("duration", { required: true })}
-                value={duration}
-              >
-                {[30, 60, 90].map((time) => (
-                  <MenuItem
-                    key={time}
-                    value={time}
-                    style={{ background: "#F8B179" }}
-                  >
-                    {time} : min
-                  </MenuItem>
-                ))}
-              </StyledSelect>
+              <motion.div variants={inputVariants} initial="initial" whileFocus="focused">
+                <StyledSelect
+                  size="medium"
+                  {...register("duration", { required: true })}
+                  value={duration}
+                >
+                  {[30, 60, 90].map((time) => (
+                    <MenuItem
+                      key={time}
+                      value={time}
+                      sx={{ background: "#fff", "&:hover": { background: "#F8B179" }, color: "black" }}
+                    >
+                      {time} min
+                    </MenuItem>
+                  ))}
+                </StyledSelect>
+              </motion.div>
             </Box>
           </Box>
 
           <Box>
             <FormLabelBold>Difficulty</FormLabelBold>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <RadioGroup
-                row
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="Easy"
-                name="radio-buttons-group"
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  backgroundColor: "#2D3250",
-                  padding: "10px",
-                  borderRadius: "8px",
-                  width: "300px",
-                }}
-              >
-                {["Easy", "Medium", "Hard"].map((level) => (
-                  <FormControlLabel
-                    {...register("difficulty", { required: true })}
-                    key={level}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      color: "white",
-                      fontWeight: "bold",
-                      "&.MuiFormControlLabel-root": {
-                        margin: 0,
-                      },
-                    }}
-                    value={level}
-                    control={
-                      <Radio
-                        sx={{
-                          "&.Mui-checked": {
-                            color: "#FFBF86",
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 40,
-                          },
-                        }}
-                      />
-                    }
-                    label={level}
-                  />
-                ))}
-              </RadioGroup>
-            </Box>
+            <DifficultyContainer>
+              {["Easy", "Medium", "Hard"].map((level) => (
+                <FormControlLabel
+                  key={level}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    color: "white",
+                    fontWeight: "bold",
+                    margin: 0,
+                  }}
+                  value={level}
+                  control={
+                    <Radio
+                      {...register("difficulty", { required: true })}
+                      sx={{ display: "none" }} // Hide default radio
+                      checked={difficulty === level}
+                    />
+                  }
+                  label={
+                    <Box sx={{ textAlign: "center" }}>
+                      <DifficultyOption
+                        selected={difficulty === level}
+                        animate={{ scale: difficulty === level ? 1.1 : 1 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                      >
+                        {difficulty === level && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            ✓
+                          </motion.div>
+                        )}
+                      </DifficultyOption>
+                      <Typography sx={{ mt: 1, color: "#fff" }}>{level}</Typography>
+                    </Box>
+                  }
+                />
+              ))}
+            </DifficultyContainer>
           </Box>
 
           <CreateButton
-            sx={{ display: "block", margin: "20px auto" }}
             variant="contained"
             type="submit"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            disabled={isLoading}
           >
-            Create
+            {isLoading ? "Creating..." : "Create"}
           </CreateButton>
         </form>
       </Card>
