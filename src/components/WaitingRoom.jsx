@@ -1,59 +1,31 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Container, TextField, Tooltip } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  Tooltip,
+  LinearProgress,
+} from "@mui/material";
 import { Person, ContentCopy } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { GetData } from "../localstorage/savedata";
 import { toast } from "react-toastify";
 
 const WaitingRoom = () => {
-  // Initially, no members have joined
   const [membersJoined, setMembersJoined] = useState(0);
-  // maxMembers is taken from the create page
   const maxMembers = GetData("data").capacity;
   const uid = GetData("data").uid;
   const navigate = useNavigate();
   const [isReady, setIsReady] = useState(false);
-  // State for username input
   const [username, setUsername] = useState("");
+  const [countdown, setCountdown] = useState(5);
 
-  const handleStart = async () => {
-    // If username is empty, show a toast message and do nothing
-    if (!username) {
-      toast.warning("please fill the username", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-      });
-      return;
-    }
-    // If not already ready, set ready and update members count
-    if (!isReady) {
-      setIsReady(true);
-      setMembersJoined((prev) => prev + 1);
-      if (membersJoined + 1 === maxMembers) {
-        toast.success("All members are ready!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "dark",
-        });
-        navigate("/competition");
-      }
-    }
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(uid.toString());
-    toast.success("Copied to clipboard", {
+  // Reusable toast function
+  const showToast = (type, msg) =>
+    toast[type](msg, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
@@ -62,6 +34,38 @@ const WaitingRoom = () => {
       draggable: true,
       theme: "dark",
     });
+
+  const handleStart = () => {
+    if (!username) {
+      showToast("warning", "Please fill the username");
+      return;
+    }
+    if (!isReady) {
+      setIsReady(true);
+      setMembersJoined((prev) => prev + 1);
+    }
+  };
+  const isFull = membersJoined === maxMembers;
+
+  useEffect(() => {
+    if (membersJoined === maxMembers) {
+      showToast("success", "All members are ready!");
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            navigate("/competition");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [membersJoined]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(uid.toString());
+    showToast("success", "Copied to clipboard");
   };
 
   return (
@@ -85,12 +89,6 @@ const WaitingRoom = () => {
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.6 }}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                pt: 4,
-              }}
             >
               <Typography
                 variant="h4"
@@ -98,14 +96,10 @@ const WaitingRoom = () => {
                   mb: 4,
                   fontWeight: "bold",
                   fontSize: "2.7rem",
-                  alignSelf: "start",
                   color: "white",
-                  "& span": {
-                    color: "#F8B179",
-                  },
                 }}
               >
-                Go<span>Grok</span>
+                Go<span style={{ color: "#F8B179" }}>Grok</span>
               </Typography>
             </motion.div>
 
@@ -129,37 +123,85 @@ const WaitingRoom = () => {
                   gap: 1,
                   mb: 3,
                   mt: "2rem",
-                  fontWeight: "bold",
-                  fontSize: "4rem",
                 }}
               >
-                <Person
-                  sx={{
-                    color: "#F8B179",
-                    fontWeight: "bold",
-                    fontSize: "4.5rem",
-                  }}
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                <Person sx={{ color: "#F8B179", fontSize: "4.5rem" }} />
+                <Typography
+                  variant="h5"
+                  sx={{ color: "white", fontWeight: "bold", fontSize: "3rem" }}
                 >
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: "3rem",
-                      alignSelf: "self-end",
-                    }}
-                  >
-                    {membersJoined} / {maxMembers}
-                  </Typography>
-                </motion.div>
+                  {membersJoined} / {maxMembers}
+                </Typography>
               </Box>
 
-              {/* Waiting Text */}
+              {/* Enhanced Progress Bar with Label */}
+              <Box sx={{ width: "100%", mb: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 0.5,
+                  }}
+                >
+                  {/* <Typography sx={{ color: "white", fontWeight: "bold" }}>
+                    Readiness Progress
+                  </Typography> */}
+                  <Typography sx={{ color: "#F8B179", fontWeight: "bold" }}>
+                    {Math.floor((membersJoined / maxMembers) * 100)}%
+                  </Typography>
+                </Box>
+
+                <LinearProgress
+                  variant="determinate"
+                  value={(membersJoined / maxMembers) * 100}
+                  sx={{
+                    height: 12,
+                    borderRadius: 5,
+                    backgroundColor: "#2D3250",
+                    boxShadow: "0 0 5px rgba(255, 255, 255, 0.1)",
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 5,
+                      backgroundImage:
+                        "linear-gradient(90deg, #F8B179, #ffcc80)",
+                      transition: "width 0.5s ease-in-out",
+                      boxShadow: isFull
+                        ? "0 0 20px rgba(248, 177, 121, 0.9), 0 0 30px rgba(255, 204, 128, 0.8)"
+                        : "0 0 10px rgba(248, 177, 121, 0.8)",
+                      animation: isFull
+                        ? "pulse 1.5s infinite ease-in-out"
+                        : "none",
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Joined Users */}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  mb: 3,
+                }}
+              >
+                {[...Array(membersJoined)].map((_, idx) => (
+                  <Box
+                    key={idx}
+                    sx={{
+                      bgcolor: "#2D3250",
+                      color: "white",
+                      px: 2,
+                      py: 1,
+                      borderRadius: 2,
+                      boxShadow: "0 0 10px rgba(248, 177, 121, 0.5)",
+                    }}
+                  >
+                    Player {idx + 1}
+                  </Box>
+                ))}
+              </Box>
+
               <Typography
                 variant="h4"
                 sx={{
@@ -169,10 +211,11 @@ const WaitingRoom = () => {
                   fontSize: "2rem",
                 }}
               >
-                Waiting...
+                Waiting
+                <span className="dot-flashing" />
               </Typography>
 
-              {/* Generated Code with Copy Icon */}
+              {/* Code Box */}
               <Box
                 sx={{
                   display: "flex",
@@ -189,10 +232,7 @@ const WaitingRoom = () => {
                     display: "flex",
                     gap: "8px",
                     backgroundColor: "#2D3250",
-                    paddingTop: "1.5rem",
-                    paddingBottom: "1.5rem",
-                    paddingLeft: "3.5rem",
-                    paddingRight: "3.5rem",
+                    padding: "1.5rem 3.5rem",
                     borderRadius: "10px",
                   }}
                 >
@@ -202,7 +242,6 @@ const WaitingRoom = () => {
                     .map((num, i) => (
                       <motion.div
                         key={i}
-                        initial="initial"
                         style={{
                           width: 40,
                           height: 40,
@@ -214,6 +253,7 @@ const WaitingRoom = () => {
                           fontSize: "1.5rem",
                           fontWeight: "bold",
                           color: "#161E31",
+                          boxShadow: "0 0 10px rgba(255,255,255,0.3)",
                         }}
                       >
                         {num}
@@ -222,86 +262,99 @@ const WaitingRoom = () => {
                 </motion.div>
                 <ContentCopy
                   onClick={handleCopy}
-                  sx={{
-                    cursor: "pointer",
-                    color: "#F8B179",
-                    fontSize: "2rem",
-                  }}
+                  sx={{ cursor: "pointer", color: "#F8B179", fontSize: "2rem" }}
                 />
               </Box>
 
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.4 }}
+              {/* Username Field */}
+              <TextField
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                sx={{
+                  mb: "24px",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#E4A66B",
+                      borderWidth: "2px",
+                    },
+                    "&:hover fieldset": { borderColor: "white" },
+                    "&.Mui-focused fieldset": { borderColor: "white" },
+                  },
+                  "& .MuiInputLabel-root": { color: "white" },
+                  "& .MuiInputLabel-root.Mui-focused": { color: "#E4A66B" },
+                }}
+                label="Username"
+                variant="outlined"
+              />
+
+              {/* Start Button */}
+              <Tooltip
+                title={!username ? "Please fill the username" : ""}
+                arrow
               >
-                <TextField
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                <Button
+                  variant="contained"
+                  onClick={handleStart}
                   sx={{
-                    mb: "24px",
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "#E4A66B",
-                        borderWidth: "2px",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "white",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "white",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "white",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#E4A66B",
-                    },
+                    bgcolor: "#F8B179",
+                    color: "white",
+                    px: 6.5,
+                    py: 0.5,
+                    borderRadius: 2,
+                    mb: 5,
+                    textTransform: "none",
+                    fontSize: "1.8rem",
+                    fontWeight: "bold",
+                    "&:hover": { bgcolor: "#F8B179" },
                   }}
-                  id="outlined-basic"
-                  label="Username"
-                  variant="outlined"
-                />
-              </motion.div>
-              {/* Start/Ready Button with Tooltip */}
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.4 }}
-              >
-                <Tooltip
-                  title={!username ? "please fill the username" : ""}
-                  arrow
-                  disableFocusListener={false}
-                  disableHoverListener={false}
                 >
-                  <Button
-                    variant="contained"
-                    onClick={handleStart}
-                    sx={{
-                      bgcolor: "#F8B179",
-                      color: "white",
-                      px: 6.5,
-                      py: 0.5,
-                      borderRadius: 2,
-                      mb: 5,
-                      textTransform: "none",
-                      fontSize: "1.8rem",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        bgcolor: "#F8B179",
-                      },
-                    }}
-                  >
-                    {isReady ? "Ready" : "Start"}
-                  </Button>
-                </Tooltip>
-              </motion.div>
+                  {isReady ? "Ready" : "Start"}
+                </Button>
+              </Tooltip>
+
+              {/* Countdown Message */}
+              {membersJoined === maxMembers && (
+                <Typography
+                  variant="h5"
+                  sx={{ color: "#F8B179", fontWeight: "bold", mt: 2 }}
+                >
+                  Starting in {countdown}...
+                </Typography>
+              )}
             </Box>
           </Box>
         </Container>
       </Box>
+
+      {/* CSS for dot animation */}
+      <style>{`
+        .dot-flashing {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          margin-left: 5px;
+          background-color: #f8b179;
+          border-radius: 50%;
+          animation: dotFlashing 1s infinite linear alternate;
+        }
+        @keyframes dotFlashing {
+          0% { opacity: 0.2; }
+          100% { opacity: 1; }
+        }
+
+        @keyframes pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(248, 177, 121, 1);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
+  }
+}
+
+      `}</style>
     </motion.div>
   );
 };
