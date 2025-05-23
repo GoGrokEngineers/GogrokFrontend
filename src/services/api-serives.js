@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://139.162.134.90:8000/api/competition/";
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 const ApiService = {
   createCompetition: async (post) => {
