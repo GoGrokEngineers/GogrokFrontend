@@ -1,23 +1,26 @@
 import React from "react";
-import { Button, Typography, Container } from "@mui/material";
+import { Button, Typography, Container, useMediaQuery, useTheme, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
-
 import { useNavigate } from "react-router-dom";
 
-
 const HomePage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // <600px
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600px - 900px
 
   const handleGetStarted = () => {
-    navigate("/main"); // Redirects to the root
+    navigate("/main");
   };
+
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         backgroundColor: "#161E31",
         color: "white",
         minHeight: "100vh",
+        pb: 4,
       }}
     >
       <Navbar />
@@ -34,7 +37,13 @@ const HomePage = () => {
             variant="h2"
             component="h1"
             fontWeight="bold"
-            sx={{ fontSize: "3.5rem" }}
+            sx={{
+              fontSize: {
+                xs: "2.2rem",
+                sm: "2.8rem",
+                md: "3.5rem",
+              },
+            }}
           >
             Welcome to{" "}
             <span style={{ color: "white" }}>Go</span>
@@ -43,12 +52,15 @@ const HomePage = () => {
         </motion.div>
 
         {/* Content Row */}
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
-            flexDirection: "row",
-            marginTop: "40px",
-            gap: "20px",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+            gap: 4,
+            mt: 5,
             alignItems: "center",
           }}
         >
@@ -59,9 +71,23 @@ const HomePage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.2 }}
           >
-            <Typography variant="body1" sx={{ fontSize: "1.3rem", lineHeight: 1.9 }}>
-              <strong style={{ color: "#ff7f50" }}>GoGrok</strong> is the ultimate platform for elite coders to
-              <strong> compete, challenge their limits</strong>, and grow their skills through
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.2rem",
+                  md: "1.3rem",
+                },
+                lineHeight: 1.9,
+                textAlign: {
+                  xs: "center",
+                  md: "left",
+                },
+              }}
+            >
+              <strong style={{ color: "#ff7f50" }}>GoGrok</strong> is the ultimate platform for elite coders to{" "}
+              <strong>compete, challenge their limits</strong>, and grow their skills through
               intense, fair, and exciting competitions. Whether you're preparing
               for coding interviews or just love the thrill of a good challenge,
               GoGrok is your arena.
@@ -78,10 +104,15 @@ const HomePage = () => {
             <img
               src="./home_img.png"
               alt="Competitive coding"
-              style={{ maxWidth: "100%", borderRadius: "12px" }}
+              style={{
+                maxWidth: "100%",
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+              }}
             />
           </motion.div>
-        </div>
+        </Box>
 
         {/* Centered Button */}
         <motion.div
@@ -96,7 +127,10 @@ const HomePage = () => {
             sx={{
               backgroundColor: "#ff7f50",
               color: "white",
-              fontSize: "1rem",
+              fontSize: {
+                xs: "0.9rem",
+                sm: "1rem",
+              },
               padding: "0.8rem 2rem",
               textTransform: "none",
               borderRadius: "10px",
@@ -109,7 +143,7 @@ const HomePage = () => {
           </Button>
         </motion.div>
       </Container>
-    </div>
+    </Box>
   );
 };
 
