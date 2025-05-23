@@ -7,8 +7,6 @@ import {
   Button,
   styled,
   TextField,
-  FormControl,
-  RadioGroup,
   FormControlLabel,
   Radio,
 } from "@mui/material";
@@ -18,19 +16,24 @@ import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
 import { WsConnection } from "../services/web-socket";
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion } from "framer-motion";
 
-// Custom styled components
-const Container = styled(Box)({
+const Container = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-evenly",
   backgroundColor: "#161E31",
-});
+  padding: theme.spacing(2),
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: theme.spacing(4),
+  },
+}));
 
-const Logo = styled(Typography)({
+const Logo = styled(Typography)(({ theme }) => ({
   fontSize: "7rem",
   fontWeight: "bold",
   color: "#fff",
@@ -41,16 +44,29 @@ const Logo = styled(Typography)({
     display: "block",
     marginLeft: "2rem",
   },
-});
+  [theme.breakpoints.down("md")]: {
+    fontSize: "4rem",
+    "& span": {
+      marginLeft: "1rem",
+    },
+  },
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "3rem",
+  },
+}));
 
-const Card = styled(motion(Box))({
+const Card = styled(motion(Box))(({ theme }) => ({
   backgroundColor: "#424669",
   borderRadius: "16px",
   padding: "25px",
   width: "350px",
-  height: "450px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)", // Subtle shadow
-});
+  height: "auto",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+  [theme.breakpoints.down("sm")]: {
+    width: "90%",
+    padding: "20px",
+  },
+}));
 
 const FormLabel = styled(Typography)({
   color: "#f8b179",
@@ -81,7 +97,7 @@ const StyledTextField = styled(TextField)({
     },
     "&.Mui-focused fieldset": {
       borderColor: "#F8B179",
-      boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)", // Glow effect
+      boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)",
     },
   },
   "& .MuiInputLabel-root": {
@@ -100,8 +116,6 @@ const StyledSelect = styled(Select)({
   color: "black",
   borderRadius: "8px",
   padding: "8px",
-  width: "125px",
-  height: "40px",
   transition: "all 0.3s ease",
   "& .MuiOutlinedInput-notchedOutline": {
     borderColor: "lightgray",
@@ -111,7 +125,7 @@ const StyledSelect = styled(Select)({
   },
   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
     borderColor: "#F8B179",
-    boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)", // Glow effect
+    boxShadow: "0 0 8px rgba(248, 177, 121, 0.5)",
   },
 });
 
@@ -121,6 +135,7 @@ const DifficultyContainer = styled(Box)({
   alignItems: "center",
   gap: "20px",
   marginTop: "40px",
+  flexWrap: "wrap",
 });
 
 const DifficultyOption = styled(motion(Box))(({ selected }) => ({
@@ -138,7 +153,7 @@ const DifficultyOption = styled(motion(Box))(({ selected }) => ({
   },
 }));
 
-const CreateButton = styled(motion(Button))({
+const CreateButton = styled(motion(Button))(({ theme }) => ({
   display: "flex",
   justifySelf: "center",
   backgroundColor: "#f8b179",
@@ -153,7 +168,11 @@ const CreateButton = styled(motion(Button))({
   "&:hover": {
     backgroundColor: "#d89d7f",
   },
-});
+  [theme.breakpoints.down("sm")]: {
+    width: "80%",
+    fontSize: "1.5rem",
+  },
+}));
 
 export default function CreateSession() {
   const {
@@ -161,7 +180,6 @@ export default function CreateSession() {
     handleSubmit,
     reset,
     watch,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -170,10 +188,11 @@ export default function CreateSession() {
       capacity: 2,
     },
   });
+
   const duration = watch("duration");
   const difficulty = watch("difficulty");
   const navigate = useNavigate();
-  const { mutate, error, isLoading, isSuccess, data } = useCreateCompetition();
+  const { mutate, error, isLoading } = useCreateCompetition();
 
   const onSubmit = (e) => {
     mutate(e, {
@@ -190,14 +209,10 @@ export default function CreateSession() {
         });
         SaveData({ ...e, uid: response.competition_uid });
         WsConnection(response.competition_uid)
-          .then((response) => {
-            if (response.isOpen) {
-              navigate("/waiting");
-            }
+          .then((res) => {
+            if (res.isOpen) navigate("/waiting");
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch((err) => console.log(err));
       },
       onError: (error) => {
         toast.warn(error.response?.data?.errors?.duration?.[0] || "Error creating session", {
@@ -229,7 +244,6 @@ export default function CreateSession() {
     }
   };
 
-  // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
@@ -257,9 +271,9 @@ export default function CreateSession() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", sm: "row" },
               alignItems: "center",
-              justifySelf: "center",
+              justifyContent: "center",
               gap: 3,
             }}
           >
@@ -275,7 +289,7 @@ export default function CreateSession() {
                     min: { value: 2, message: "Must be at least 2" },
                   })}
                   InputLabelProps={{ shrink: false }}
-                  sx={{ width: "125px", height: "41px" }}
+                  sx={{ width: { xs: "100%", sm: "125px" }, height: "41px" }}
                 />
               </motion.div>
             </Box>
@@ -287,13 +301,10 @@ export default function CreateSession() {
                   size="medium"
                   {...register("duration", { required: true })}
                   value={duration}
+                  sx={{ width: { xs: "100%", sm: "125px" }, height: "41px" }}
                 >
                   {[30, 60, 90].map((time) => (
-                    <MenuItem
-                      key={time}
-                      value={time}
-                      sx={{ background: "#fff", "&:hover": { background: "#F8B179" }, color: "black" }}
-                    >
+                    <MenuItem key={time} value={time} sx={{ color: "black" }}>
                       {time} min
                     </MenuItem>
                   ))}
@@ -320,7 +331,7 @@ export default function CreateSession() {
                   control={
                     <Radio
                       {...register("difficulty", { required: true })}
-                      sx={{ display: "none" }} // Hide default radio
+                      sx={{ display: "none" }}
                       checked={difficulty === level}
                     />
                   }
