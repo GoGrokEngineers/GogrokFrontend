@@ -22,6 +22,7 @@ const WaitingRoom = () => {
   const [isReady, setIsReady] = useState(false);
   const [username, setUsername] = useState("");
   const [countdown, setCountdown] = useState(5);
+const [hasStarted, setHasStarted] = useState(false);
 
   // Reusable toast function
   const showToast = (type, msg) =>
@@ -35,16 +36,50 @@ const WaitingRoom = () => {
       theme: "dark",
     });
 
-  const handleStart = () => {
-    if (!username) {
-      showToast("warning", "Please fill the username");
-      return;
+  // const handleStart = () => {
+  //   if (!username) {
+  //     showToast("warning", "Please fill the username");
+  //     return;
+  //   }
+  //   if (!isReady) {
+  //     setIsReady(true);
+  //     setMembersJoined((prev) => prev + 1);
+  //   }
+  // };
+const handleStart = () => {
+  if (!username) {
+    showToast("warning", "Please fill the username");
+    return;
+  }
+
+  // First click on Start
+  if (!hasStarted) {
+    setHasStarted(true);
+    setIsReady(true);
+    setMembersJoined((prev) => prev + 1);
+    showToast("success", "You are ready");
+    return;
+  }
+
+  // Toggle Ready/Unready after Start
+  setIsReady((prevReady) => {
+    if (prevReady) {
+      setMembersJoined((prev) => Math.max(prev - 1, 0));
+      showToast("info", "You are unready");
+    } else {
+      if (membersJoined < maxMembers) {
+        setMembersJoined((prev) => prev + 1);
+        showToast("success", "You are ready");
+      } else {
+        showToast("warning", "Room is full");
+        return prevReady;
+      }
     }
-    if (!isReady) {
-      setIsReady(true);
-      setMembersJoined((prev) => prev + 1);
-    }
-  };
+    return !prevReady;
+  });
+};
+
+
   const isFull = membersJoined === maxMembers;
 
   useEffect(() => {
@@ -308,7 +343,8 @@ const WaitingRoom = () => {
                     "&:hover": { bgcolor: "#F8B179" },
                   }}
                 >
-                  {isReady ? "Ready" : "Start"}
+                 {!hasStarted ? "Start" : isReady ? "Unready" : "Ready"}
+
                 </Button>
               </Tooltip>
 
