@@ -7,6 +7,10 @@ const AboutPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const handleJoinUsClick = () => {
+  window.open("https://www.linkedin.com/company/gogrok", "_blank");
+};
+
   return (
     <Box sx={{ backgroundColor: "#161E31", color: "white", minHeight: "100vh" }}>
       <Navbar />
@@ -72,6 +76,7 @@ const AboutPage = () => {
 
             <Button
               variant="contained"
+              onClick={handleJoinUsClick}
               sx={{
                 mt: 4,
                 backgroundColor: "#ff7f50",

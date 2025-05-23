@@ -1,35 +1,47 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Box, Button, TextField, Typography } from '@mui/material'
+import {
+	Box,
+	Button,
+	TextField,
+	Typography,
+	MenuItem,
+	Select,
+	FormControl,
+	InputLabel,
+} from '@mui/material'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import SendIcon from '@mui/icons-material/Send'
 import { SessionContext } from '../context/SessionContext'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
-import { GetData, RemoveData } from "../localstorage/savedata";
+import { GetData, RemoveData } from '../localstorage/savedata'
 
 const CodingPlatform = () => {
 	const { duration } = useContext(SessionContext)
 	const [timer, setTimer] = useState(duration * 60)
+	const [language, setLanguage] = useState('python')
 	const navigate = useNavigate()
 
-	// time counting
-  useEffect(() => {
-    const savedData = GetData("data");
-    setTimer(savedData.duration * 60);
-  }, []);
-  useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else if (timer === 0) {
-      return RemoveData("data");
-    }
-  }, [timer]);
+	// Load timer from local storage
+	useEffect(() => {
+		const savedData = GetData('data')
+		setTimer(savedData.duration * 60)
+	}, [])
 
-	// format time
-	const formatTime = timer => {
+	// Countdown logic
+	useEffect(() => {
+		if (timer > 0) {
+			const interval = setInterval(() => {
+				setTimer((prev) => prev - 1)
+			}, 1000)
+			return () => clearInterval(interval)
+		} else if (timer === 0) {
+			return RemoveData('data')
+		}
+	}, [timer])
+
+	// Format timer for display
+	const formatTime = (timer) => {
 		const minutes = Math.floor(timer / 60)
 		const remainingSeconds = timer % 60
 		return `${String(minutes).padStart(2, '0')}:${String(
@@ -37,9 +49,9 @@ const CodingPlatform = () => {
 		).padStart(2, '0')}`
 	}
 
-	// Submit button
+	// Navigate on submit
 	const onSubmit = () => {
-		navigate('/board')
+		navigate('/leaderboard')
 	}
 
 	return (
@@ -77,13 +89,13 @@ const CodingPlatform = () => {
 					}}
 				>
 					<AccessTimeIcon sx={{ marginRight: '0.5rem', color: '#F8B179' }} />
-					{/* Timer */}
 					{formatTime(timer)}
 				</Typography>
 				<Box>
 					<Button
 						variant='contained'
 						sx={{
+							color: '#fff',
 							backgroundColor: '#F8B179',
 							'&:hover': { backgroundColor: '#F8B169' },
 						}}
@@ -118,15 +130,46 @@ const CodingPlatform = () => {
 						padding: '1rem',
 					}}
 				>
+					{/* Language Selector */}
+					<FormControl fullWidth sx={{ mb: 2 }}>
+						<InputLabel sx={{ color: '#fff' }}>Language</InputLabel>
+						<Select
+							value={language}
+							label='Language'
+							onChange={(e) => setLanguage(e.target.value)}
+							sx={{
+								color: '#fff',
+								backgroundColor: '#161E31',
+								'& .MuiOutlinedInput-notchedOutline': {
+									borderColor: '#fff',
+								},
+								'& .MuiSvgIcon-root': {
+									color: '#fff',
+								},
+							}}
+
+							MenuProps={{
+								PaperProps: {
+									sx: {
+										color: '#222'
+									},
+								},
+							}}
+						>
+							<MenuItem value='python'>Python</MenuItem>
+
+						</Select>
+					</FormControl>
+
+					{/* Code Input */}
 					<TextField
 						multiline
-						rows={28}
-						placeholder='Write your code here...'
+						rows={20}
+						placeholder={`Write your ${language} code here...`}
 						variant='outlined'
 						sx={{
 							width: '100%',
 							height: '100%',
-
 							'& .MuiOutlinedInput-root': {
 								color: '#fff',
 								backgroundColor: '#161E31',
@@ -157,8 +200,7 @@ const CodingPlatform = () => {
 						className='scrollbar'
 					>
 						<Typography>
-							Write the problem description here. This section is scrollable to
-							handle long content. Write the problem description here.
+
 						</Typography>
 					</Box>
 				</Box>
