@@ -1,72 +1,82 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Navbar.css"; // Adjust the path as necessary
+import { FaHome, FaInfoCircle, FaPlay } from "react-icons/fa";
 const Navbar = () => {
-  const navigate = useNavigate();
+  const icons = {
+    Home: <FaHome />,
+    About: <FaInfoCircle />,
+    Start: <FaPlay />,
+  };
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogoClick = () => {
-    // Reload and redirect to home
     window.location.href = "/";
   };
 
-  return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "1rem 2rem",
-        backgroundColor: "#161E31",
-        color: "white",
-      }}
-    >
-      {/* Logo */}
-      <h2
-        onClick={handleLogoClick}
-        style={{
-          margin: 0,
-          cursor: "pointer",
-          fontSize: "1.8rem",
-        }}
-      >
-        MySite
-      </h2>
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
-      {/* Navigation links */}
-      <ul
-        style={{
-          listStyle: "none",
-          display: "flex",
-          gap: "2rem",
-          margin: 0,
-          padding: 0,
-        }}
-      >
-        {["Home", "About", "Start"].map((text, idx) => (
-          <li key={idx}>
-            <Link
-              to={
-                text === "Home"
-                  ? "/"
-                  : text === "Start"
-                  ? "/main"
-                  : `/${text.toLowerCase()}`
-              }
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontSize: "1.2rem",
-                transition: "color 0.3s",
-              }}
-              onMouseEnter={(e) => (e.target.style.color = "#ff7f50")}
-              onMouseLeave={(e) => (e.target.style.color = "white")}
-            >
-              {text}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+  // Close menu on link click or clicking outside (overlay)
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  return (
+    <>
+      <nav>
+        <h2 onClick={handleLogoClick} className="logo">
+          <span style={{ color: "white" }}>Go</span>
+          <span style={{ color: "#ff7f50" }}>Grok</span>
+        </h2>
+
+        {/* Hamburger menu button */}
+        <div
+          className={`hamburger ${menuOpen ? "active" : ""}`}
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") toggleMenu();
+          }}
+        >
+          <div />
+          <div />
+          <div />
+        </div>
+
+        <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
+          {["Home", "About", "Start"].map((text, idx) => (
+            <li key={idx}>
+              <Link
+                to={
+                  text === "Home"
+                    ? "/"
+                    : text === "Start"
+                    ? "/main"
+                    : `/${text.toLowerCase()}`
+                }
+                onClick={closeMenu}
+              >
+                {/* Icon only visible on mobile sidebar */}
+                <span className="nav-icon">{icons[text]}</span>
+                {text}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Overlay */}
+      <div
+        className={`sidebar-overlay ${menuOpen ? "active" : ""}`}
+        onClick={closeMenu}
+        aria-hidden={!menuOpen}
+      />
+    </>
   );
 };
 
