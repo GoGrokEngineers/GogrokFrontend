@@ -1,8 +1,6 @@
-import { useMutation } from 'react-query';
-import axios from 'axios';
+ import { useMutation } from '@tanstack/react-query';
+import { joinCompetition } from '../services/api-service';
 
 export function useJoinCompetition() {
-  return useMutation((payload) =>
-    axios.post('http://139.162.134.90:8000/api/competition/join/', payload).then((res) => res.data)
-  );
+  return useMutation(joinCompetition);
 }

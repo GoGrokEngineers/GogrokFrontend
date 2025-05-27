@@ -1,16 +1,17 @@
-import axios from "axios";
+// src/services/api-service.js
+import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+const client = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  timeout: 15000,            // bump timeout to 15s
+  headers: { 'Content-Type': 'application/json' },
+});
 
-const ApiService = {
-  createCompetition: async (post) => {
-    const { data } = await axios.post(BASE_URL, post);
-    return data;
-  },
-  GetDailyResults: async () => {
-    const { data } = await axios.get(BASE_URL);
-    return data;
-  },
-};
+export const createCompetition = (payload) =>
+  client.post('/', payload).then(res => res.data);
 
-export default ApiService;
+export const joinCompetition = (payload) =>
+  client.post('/join/', payload).then(res => res.data);
+
+
+export default client;

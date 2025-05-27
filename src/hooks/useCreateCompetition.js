@@ -1,13 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import ApiService from "../services/api-serives";
-import { toast } from "react-toastify";
+ import { useMutation } from '@tanstack/react-query';
+import { createCompetition } from  '../services/api-serives';
 
-export const useCreateCompetition = () => {
-  return useMutation({
-    mutationFn: ApiService.createCompetition,
-    onError: (error) => {
-      console.error("CreateCompetition Error:", error);
-      toast.warn(/* … */);
-    }
-  });
-};
+export function useCreateCompetition() {
+  return useMutation(createCompetition);
+}
