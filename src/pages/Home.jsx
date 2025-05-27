@@ -143,6 +143,20 @@ const HomePage = () => {
           </Button>
         </motion.div>
       </Container>
+
+           <Box mt={10} px={3} textAlign="center">
+        <Typography variant="h5" gutterBottom>Watch Our Story</Typography>
+        <Box display="flex" justifyContent="center">
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/"
+            title="GoGrok Intro Video"
+            allowFullScreen
+            style={{ borderRadius: "12px" }}
+          ></iframe>
+        </Box>
+      </Box>
     </Box>
   );
 };

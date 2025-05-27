@@ -1,3 +1,4 @@
+ // landing page 
 import React, { useState } from "react";
 import { Box, Button, Card, Typography } from "@mui/material";
 import OTPInput from "./ui/opt-input";
@@ -100,7 +101,7 @@ const MatchingRoom = () => {
             component="form"
           >
                 {/* Animated Arrow + Text for Join */}
-            {inputValue.length < 6 && (
+            {/* {inputValue.length < 6 && (
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 1.2 }}
@@ -108,7 +109,7 @@ const MatchingRoom = () => {
               >
                 ↓ Enter code to join
               </motion.div>
-            )}
+            )} */}
             <OTPInput
               value={inputValue}
               onChange={setInputValue}
@@ -136,7 +137,7 @@ const MatchingRoom = () => {
         </Card>
 
         {/* Animated Arrow + Text for Create */}
-        {inputValue.length === 0 && (
+        {/* {inputValue.length === 0 && (
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 1.2 }}
@@ -144,7 +145,7 @@ const MatchingRoom = () => {
           >
             ↓ Or create your own room
           </motion.div>
-        )}
+        )} */}
 
         <Button
           onClick={handleCreate}

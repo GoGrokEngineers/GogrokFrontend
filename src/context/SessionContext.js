@@ -24,3 +24,4 @@ const SessionProvider = ({ children }) => {
 };
 
 export default SessionProvider;
+

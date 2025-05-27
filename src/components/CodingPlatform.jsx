@@ -1,3 +1,4 @@
+//coding platform page
 import React, { useContext, useEffect, useState } from 'react'
 import {
 	Box,
@@ -165,7 +166,7 @@ const CodingPlatform = () => {
 					<TextField
 						multiline
 						rows={20}
-						placeholder={`Write your ${language} code here...`}
+						placeholder={"Write your ${language} code here..."}
 						variant='outlined'
 						sx={{
 							width: '100%',

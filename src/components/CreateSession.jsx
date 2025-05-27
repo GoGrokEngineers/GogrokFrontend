@@ -1,3 +1,4 @@
+// create session page
 import { useState } from "react";
 import {
   Box,
@@ -133,7 +134,7 @@ const DifficultyContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  gap: "20px",
+  gap: "30px",
   marginTop: "40px",
   flexWrap: "wrap",
 });
@@ -142,14 +143,14 @@ const DifficultyOption = styled(motion(Box))(({ selected }) => ({
   width: "40px",
   height: "40px",
   borderRadius: "50%",
-  backgroundColor: selected ? "#F8B179" : "#2D3250",
+  backgroundColor: selected ? "#07BC0B" : "#2D3250",
   cursor: "pointer",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   transition: "background-color 0.3s ease",
   "&:hover": {
-    backgroundColor: selected ? "#F8B179" : "#3a4060",
+    backgroundColor: selected ? "#07BC0B" : "#3a4060",
   },
 }));
 

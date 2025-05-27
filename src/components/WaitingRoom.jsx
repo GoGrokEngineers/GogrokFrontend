@@ -1,3 +1,4 @@
+// waiting room page
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -363,34 +364,33 @@ const handleStart = () => {
       </Box>
 
       {/* CSS for dot animation */}
-      <style>{`
-        .dot-flashing {
-          display: inline-block;
-          width: 10px;
-          height: 10px;
-          margin-left: 5px;
-          background-color: #f8b179;
-          border-radius: 50%;
-          animation: dotFlashing 1s infinite linear alternate;
-        }
-        @keyframes dotFlashing {
-          0% { opacity: 0.2; }
-          100% { opacity: 1; }
-        }
+<style>{`
+  .dot-flashing {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    background-color: #f8b179;
+    border-radius: 50%;
+    animation: dotFlashing 1s infinite linear alternate;
+  }
+  @keyframes dotFlashing {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
 
-        @keyframes pulse {
-  0% {
-    box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(248, 177, 121, 1);
+    }
+    100% {
+      box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
+    }
   }
-  50% {
-    box-shadow: 0 0 20px rgba(248, 177, 121, 1);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(248, 177, 121, 0.8);
-  }
-}
-
-      `}</style>
+`}</style>
     </motion.div>
   );
 };
