@@ -47,5 +47,4 @@ const SendData = (data) => {
     }
   });
 };
-
 export { WsConnection, SendData };
