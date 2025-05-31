@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gogrok-frontend-app
+    image: gogrok-frontend-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/root/frontend_gogrok/logs 
+      - .:/frontend_gogrok
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+    command: npm start
