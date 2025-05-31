@@ -1,5 +1,6 @@
-// create session page
-import { useState } from "react";
+
+// src/components/CreateSession.jsx
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -16,7 +17,7 @@ import { Bounce, toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { SaveData } from "../localstorage/savedata";
 import { useCreateCompetition } from "../hooks/useCreateCompetition";
-import { WsConnection } from "../services/web-socket";
+import { WsConnection, SendData } from "../services/web-socket";
 import { motion } from "framer-motion";
 
 const Container = styled(Box)(({ theme }) => ({
@@ -179,7 +180,6 @@ export default function CreateSession() {
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     formState: { errors },
   } = useForm({
@@ -194,11 +194,97 @@ export default function CreateSession() {
   const difficulty = watch("difficulty");
   const navigate = useNavigate();
   const { mutate, error, isLoading } = useCreateCompetition();
+const onSubmit = (formData) => {
+  mutate(formData, {
+    onSuccess: async (response) => {
+      // 1) Show toast
+      toast.success(`${response.message}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+        transition: Bounce,
+      });
 
-  const onSubmit = (e) => {
-    mutate(e, {
-      onSuccess: (response) => {
-        toast.success(`${response.message}`, {
+      // 2) Save local data (including capacity & competition_uid)
+      SaveData({
+        ...formData,
+        uid: response.competition_uid,
+      });
+
+      // 3) Open the WebSocket for this new room, then wait for server acknowledgement
+      try {
+        const { isOpen, socket } = await WsConnection(response.competition_uid);
+        if (!isOpen) {
+          throw new Error("Unable to open WebSocket for create");
+        }
+
+        // 🟢 Attach the listener BEFORE sending the create command:
+        const createAckPromise = new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Server did not acknowledge create in time"));
+          }, 5000);
+
+          const handleMessage = (evt) => {
+            let msg;
+            try {
+              msg = JSON.parse(evt.data);
+            } catch {
+              return; // ignore invalid JSON
+            }
+
+            // 1️⃣ Check for a successful "room_created" event.
+            //     Adjust 'room_id' ↔ 'roomId' to match your server exactly:
+            if (msg.type === "room_created" && msg.room_id === response.competition_uid) {
+              clearTimeout(timeout);
+              socket.removeEventListener("message", handleMessage);
+              resolve();
+            }
+
+            // 2️⃣ Check for a “create failed” event, if the server signals failure:
+            if (msg.success === false && msg.action === "create") {
+              clearTimeout(timeout);
+              socket.removeEventListener("message", handleMessage);
+              reject(new Error(msg.message || "Create failed"));
+            }
+          };
+
+          socket.addEventListener("message", handleMessage);
+        });
+
+        // 🟢 Now send the "create" action:
+        await SendData({
+          action: "create",
+          nickname: "Host",
+          capacity: formData.capacity,
+        });
+
+        // 🟢 Wait for up to 5 seconds for that “room_created” event:
+        await createAckPromise;
+
+        // If we get here, the room was created on the server → navigate to waiting room:
+        navigate(`/waiting/${response.competition_uid}`);
+      } catch (err) {
+        console.error("Create→WS error:", err);
+        toast.error(err.message || "Failed to set up room on server", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+          transition: Bounce,
+        });
+      }
+    },
+    onError: (error) => {
+      toast.warn(
+        error.response?.data?.errors?.duration?.[0] || "Error creating session",
+        {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -207,32 +293,15 @@ export default function CreateSession() {
           draggable: true,
           theme: "dark",
           transition: Bounce,
-        });
-        SaveData({ ...e, uid: response.competition_uid });
-        WsConnection(response.competition_uid)
-          .then((res) => {
-            if (res.isOpen) navigate("/waiting");
-          })
-          .catch((err) => console.log(err));
-      },
-      onError: (error) => {
-        toast.warn(error.response?.data?.errors?.duration?.[0] || "Error creating session", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "dark",
-          transition: Bounce,
-        });
-      },
-    });
-  };
+        }
+      );
+    },
+  });
+};
 
-  const onError = (errors) => {
-    if (errors.capacity) {
-      toast.warn(errors.capacity.message, {
+  const onError = (formErrors) => {
+    if (formErrors.capacity) {
+      toast.warn(formErrors.capacity.message, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
