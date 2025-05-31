@@ -1,6 +1,6 @@
- import { useMutation } from '@tanstack/react-query';
-import { createCompetition } from  '../services/api-serives';
+import { useMutation } from "@tanstack/react-query";
+import ApiService from "../services/api-serives";
 
-export function useCreateCompetition() {
-  return useMutation(createCompetition);
-}
+export const useCreateCompetition = () => {
+  return useMutation({ mutationFn: ApiService.createCompetition });
+};
