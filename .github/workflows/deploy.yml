@@ -24,17 +24,16 @@ jobs:
       - name: Install dependencies
         run: npm install
         
-      - name: Install dependencies
+      - name: Update sudo
         run: |
           sudo apt-get update
-          npm install
           sudo pip3 install linode-cli
           linode-cli --version  # Verify installation
 
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
