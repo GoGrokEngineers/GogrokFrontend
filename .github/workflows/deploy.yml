@@ -43,7 +43,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@139.162.134.90 << 'EOF'
             # Navigate to the /root/frontend_gogrok directory
-            cd /root/fronted_gogrok
+            cd /root/frontend_gogrok
             # Pull changes
             git pull origin main
             # Run Docker Compose to start the containers
