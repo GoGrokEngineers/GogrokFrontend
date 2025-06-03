@@ -1,4 +1,4 @@
-FROM node:24 AS build
+FROM node:20 AS build
 
 # Set memory limit for Node.js to avoid OOM during build
 ENV NODE_OPTIONS=--max-old-space-size=4096
